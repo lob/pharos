@@ -1,4 +1,4 @@
-FROM golang:1.12.0 AS build
+FROM golang:1.12.5 AS build
 
 RUN curl -fsSL -o /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.5.0/dep-linux-amd64
 RUN chmod +x /usr/local/bin/dep

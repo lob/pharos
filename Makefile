@@ -45,7 +45,7 @@ lint:
 .PHONY: setup
 setup:
 	@echo "--> Installing development tools"
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(BIN_DIR) v1.15.0
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(BIN_DIR) v1.16.0
 	go get -u $(GOTOOLS)
 
 .PHONY: start
