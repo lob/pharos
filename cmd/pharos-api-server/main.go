@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	logger "github.com/lob/logger-go"
-	"github.com/lob/pharos/pkg/pharos/application"
-	"github.com/lob/pharos/pkg/pharos/server"
+	"github.com/lob/pharos/pkg/pharos-api-server/application"
+	"github.com/lob/pharos/pkg/pharos-api-server/server"
 )
 
 func main() {

@@ -10,10 +10,10 @@ import (
 	"github.com/labstack/echo"
 	logger "github.com/lob/logger-go"
 	metrics "github.com/lob/metrics-go"
-	"github.com/lob/pharos/pkg/pharos/application"
-	"github.com/lob/pharos/pkg/pharos/health"
-	"github.com/lob/pharos/pkg/pharos/recovery"
-	"github.com/lob/pharos/pkg/pharos/signals"
+	"github.com/lob/pharos/pkg/pharos-api-server/application"
+	"github.com/lob/pharos/pkg/pharos-api-server/health"
+	"github.com/lob/pharos/pkg/pharos-api-server/recovery"
+	"github.com/lob/pharos/pkg/pharos-api-server/signals"
 	sentryecho "github.com/lob/sentry-echo/pkg"
 )
 

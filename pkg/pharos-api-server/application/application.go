@@ -2,7 +2,7 @@ package application
 
 import (
 	"github.com/lob/metrics-go"
-	"github.com/lob/pharos/pkg/pharos/config"
+	"github.com/lob/pharos/pkg/pharos-api-server/config"
 	"github.com/lob/sentry-echo/pkg/sentry"
 	"github.com/pkg/errors"
 )

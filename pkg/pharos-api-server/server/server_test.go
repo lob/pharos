@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/lob/pharos/pkg/pharos/application"
+	"github.com/lob/pharos/pkg/pharos-api-server/application"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
