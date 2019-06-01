@@ -16,11 +16,16 @@ var ClustersCmd = &cobra.Command{
 	Long: `Prints current cluster from the context in the kubeconfig file at
 $HOME/.kube/config, unless otherwise specified.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(kubeconfig.CurrentCluster(&file))
+		clusterName, err := kubeconfig.CurrentCluster(file)
+		if err != nil {
+			fmt.Printf("Unable to retrieve cluster: %s\n", err.Error())
+		} else {
+			fmt.Println(clusterName)
+		}
 	},
 }
 
 func init() {
 	ClustersCmd.AddCommand(SwitchCmd)
-	ClustersCmd.Flags().StringVarP(&file, "file", "f", "/.kube/config", "specify kubeconfig file")
+	ClustersCmd.Flags().StringVarP(&file, "file", "f", "", "specify kubeconfig file")
 }
