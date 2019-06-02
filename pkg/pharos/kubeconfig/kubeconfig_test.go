@@ -16,10 +16,10 @@ const EmptyConfig string = "../fixtures/empty"
 const NonExistentConfig string = "../fixtures/nonexistent"
 
 func TestCurrentCluster(t *testing.T) {
-	t.Run("sucessfully retrieves current cluster", func(tt *testing.T) {
+	t.Run("successfully retrieves current cluster", func(tt *testing.T) {
 		cluster, err := CurrentCluster(Config)
 		assert.NoError(t, err)
-		assert.Equal(t, "sandbox-test", cluster)
+		assert.Equal(t, "sandbox", cluster)
 	})
 
 	t.Run("errors when reading from malformed config file", func(tt *testing.T) {

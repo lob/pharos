@@ -8,19 +8,20 @@ import (
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-// CurrentCluster returns current cluster name from current context
+// CurrentCluster returns current context name
 func CurrentCluster(kubeConfigFile string) (string, error) {
 	kubeConfig, err := ConfigFromFile(FilePath(kubeConfigFile))
 	if err != nil {
 		return "", err
 	}
 
+	// Make sure that current context exists
 	context := (kubeConfig.Contexts[kubeConfig.CurrentContext])
 	if context == nil {
 		return "", errors.New("no context found")
 	}
 
-	return context.Cluster, nil
+	return kubeConfig.CurrentContext, nil
 }
 
 // FilePath returns final kubeconfig file path (defaults to "$HOME/.kube/config" if empty string is passed in)
