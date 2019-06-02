@@ -38,7 +38,7 @@ func TestListClusters(t *testing.T) {
 
 	t.Run("lists clusters successfully", func(tt *testing.T) {
 		c := NewClient(&config.Config{BaseURL: srv.URL})
-		clusters, err := c.ListClusters()
+		clusters, err := c.ListClusters(nil)
 		assert.NoError(tt, err)
 
 		assert.Equal(tt, 2, len(clusters))
@@ -47,7 +47,7 @@ func TestListClusters(t *testing.T) {
 
 	t.Run("fails to list clusters using a bad client", func(tt *testing.T) {
 		c := NewClient(&config.Config{BaseURL: ""})
-		clusters, err := c.ListClusters()
+		clusters, err := c.ListClusters(nil)
 		assert.Error(tt, err)
 		assert.Nil(tt, clusters)
 	})

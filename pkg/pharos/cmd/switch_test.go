@@ -32,20 +32,3 @@ func TestRunSwitch(t *testing.T) {
 		assert.Contains(tt, err.Error(), "cluster switch unsuccessful")
 	})
 }
-
-func TestArgSwitch(t *testing.T) {
-	t.Run("succeeds when we are given exactly one argument", func(tt *testing.T) {
-		err := argSwitch([]string{"1"})
-		require.NoError(tt, err)
-	})
-
-	t.Run("errors if too few arguments are passed in", func(tt *testing.T) {
-		err := argSwitch([]string{})
-		require.Error(tt, err)
-	})
-
-	t.Run("errors if too many arguments are passed in", func(tt *testing.T) {
-		err := argSwitch([]string{"1", "2"})
-		require.Error(tt, err)
-	})
-}

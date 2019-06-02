@@ -14,6 +14,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const configFile = "../testdata/pharosConfig"
+
 func TestClient(t *testing.T) {
 	var testResponse = []byte(`{
 		"id": "production-6906ce",
@@ -42,7 +44,7 @@ func TestClient(t *testing.T) {
 		// TODO: Test making a GET request to the pharos-api-server when that's been set up.
 		// c := NewClient(Config{BaseURL: "http://localhost:7654"})
 
-		err := c.send(http.MethodGet, "", nil, &cluster)
+		err := c.send(http.MethodGet, "", nil, &cluster, nil)
 		assert.NoError(tt, err)
 		assert.Equal(tt, "production-6906ce", cluster.ID)
 	})
@@ -51,9 +53,20 @@ func TestClient(t *testing.T) {
 		c := NewClient(&config.Config{BaseURL: "bad url"})
 		cluster := model.Cluster{}
 
-		err := c.send("", "", nil, &cluster)
+		err := c.send("", "", nil, &cluster, nil)
 		assert.Error(tt, err)
 		assert.Contains(tt, err.Error(), "unsupported protocol")
+	})
+}
+
+func TestClientFromConfig(t *testing.T) {
+	t.Run("successfully creates a new client", func(tt *testing.T) {
+		c, err := ClientFromConfig(configFile)
+		require.NoError(tt, err)
+		assert.NotNil(tt, c)
+
+		assert.Equal(tt, 10*time.Second, c.client.Timeout)
+		assert.Equal(tt, "pharos.lob-sandbox.com", c.config.BaseURL)
 	})
 }
 
