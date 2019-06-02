@@ -2,12 +2,9 @@ package kubeconfig
 
 import (
 	"os"
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
 const Config string = "../fixtures/config"
@@ -47,24 +44,5 @@ func TestFilePath(t *testing.T) {
 	t.Run("returns the file name that is passed in", func(tt *testing.T) {
 		kubeConfigFile := FilePath(Config)
 		assert.Equal(t, "../fixtures/config", kubeConfigFile)
-	})
-}
-
-func TestConfigFromFile(t *testing.T) {
-	t.Run("successfully loads from config file", func(tt *testing.T) {
-		_, err := ConfigFromFile(Config)
-		require.NoError(t, err)
-	})
-
-	t.Run("returns empty kubeconfig struct when loading from nonexistent file", func(tt *testing.T) {
-		kubeConfig, err := ConfigFromFile(NonExistentConfig)
-		require.NoError(t, err)
-		assert.True(t, reflect.DeepEqual(kubeConfig, clientcmdapi.NewConfig()))
-	})
-
-	t.Run("returns empty kubeconfig struct when loading from empty config file", func(tt *testing.T) {
-		kubeConfig, err := ConfigFromFile(EmptyConfig)
-		require.NoError(t, err)
-		assert.True(t, reflect.DeepEqual(kubeConfig, clientcmdapi.NewConfig()))
 	})
 }
