@@ -43,6 +43,61 @@ func TestCurrentCluster(t *testing.T) {
 	})
 }
 
+func TestSwitchCluster(t *testing.T) {
+	t.Run("successfully switches to cluster", func(tt *testing.T) {
+		cluster, err := CurrentCluster(config)
+		require.NoError(tt, err)
+		assert.Equal(tt, "sandbox", cluster)
+
+		// Switch to context "sandbox-111111".
+		err = SwitchCluster(config, "sandbox-111111")
+		require.NoError(tt, err)
+
+		// Check that switch was successful.
+		cluster, err = CurrentCluster(config)
+		require.NoError(tt, err)
+		assert.Equal(tt, "sandbox-111111", cluster)
+
+		// Switch back to context "sandbox".
+		err = SwitchCluster(config, "sandbox")
+		require.NoError(tt, err)
+	})
+
+	t.Run("errors when switching to a cluster that does not exist", func(tt *testing.T) {
+		cluster, err := CurrentCluster(config)
+		require.NoError(tt, err)
+		assert.Equal(tt, "sandbox", cluster)
+
+		// Switch to context "egg".
+		err = SwitchCluster(config, "egg")
+		require.Error(tt, err)
+		assert.Contains(tt, err.Error(), "cluster does not exist in context")
+
+		// Current cluster should still be set to sandbox.
+		cluster, err = CurrentCluster(config)
+		require.NoError(tt, err)
+		assert.Equal(tt, "sandbox", cluster)
+	})
+
+	t.Run("errors when switching using malformed config file", func(tt *testing.T) {
+		err := SwitchCluster(malformedConfig, "sandbox")
+		require.Error(tt, err)
+		assert.Contains(tt, err.Error(), "illegal base64 data at input byte 1")
+	})
+
+	t.Run("errors when switching using empty config file", func(tt *testing.T) {
+		err := SwitchCluster(emptyConfig, "sandbox")
+		require.Error(tt, err)
+		assert.Contains(tt, err.Error(), "cluster does not exist in context")
+	})
+
+	t.Run("errors when switching using nonexistent config file", func(tt *testing.T) {
+		err := SwitchCluster(nonExistentConfig, "sandbox")
+		require.Error(tt, err)
+		assert.Contains(tt, err.Error(), "no such file or directory")
+	})
+}
+
 func TestFilePath(t *testing.T) {
 	t.Run("defaults to $HOME/.kube/config when empty string is passed in", func(tt *testing.T) {
 		kubeConfigFile := filePath("")

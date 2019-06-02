@@ -24,6 +24,26 @@ func CurrentCluster(kubeConfigFile string) (string, error) {
 	return kubeConfig.CurrentContext, nil
 }
 
+// SwitchCluster switches current context to given cluster or context name.
+func SwitchCluster(kubeConfigFile string, context string) error {
+	kubeConfigFile = filePath(kubeConfigFile)
+	kubeConfig, err := configFromFile(kubeConfigFile)
+	if err != nil {
+		return err
+	}
+
+	// Check if there is a context corresponding to the given context name or cluster.
+	_, ok := (kubeConfig.Contexts[context])
+	if !ok {
+		return errors.New("cluster does not exist in context")
+	}
+
+	// Switch to new cluster.
+	kubeConfig.CurrentContext = context
+
+	return clientcmd.WriteToFile(*kubeConfig, kubeConfigFile)
+}
+
 // filePath returns final kubeconfig file path.
 // It defaults to "$HOME/.kube/config" if empty string is passed in.
 func filePath(kubeConfigFile string) string {

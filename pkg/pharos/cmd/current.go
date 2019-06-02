@@ -8,9 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var file string
-
-// CurrentCmd is the pharos clusters current command.
+// CurrentCmd is the pharos clusters command.
 var CurrentCmd = &cobra.Command{
 	Use:   "current",
 	Short: "Print current cluster",
