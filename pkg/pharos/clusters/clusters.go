@@ -18,7 +18,7 @@ $HOME/.kube/config, unless otherwise specified.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		clusterName, err := kubeconfig.CurrentCluster(file)
 		if err != nil {
-			fmt.Printf("Unable to retrieve cluster: %s\n", err.Error())
+			fmt.Printf("ERROR: Unable to retrieve cluster - %s\n", err.Error())
 		} else {
 			fmt.Println(clusterName)
 		}

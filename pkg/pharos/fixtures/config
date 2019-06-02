@@ -3,17 +3,25 @@ clusters:
 - cluster:
     certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJDZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRFNU1EVXdNakl4TXpZME9Gb1hEVEk1TURReU9USXhNelkwT0Zvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTWN1CjFwSGt4aEkyMkhFdmpxRzJINHBydlFScWFCS1ZoczlleGQyVHpXQ2dHRFRwMHltSnBndnhPRWpNTHI3Qkc5ZHoKcXEvZDZDbEY3Q2x6eVpHUnBXSGFQYVMvQlJjbzJ1UDI2ZVBoVmNvbFFFQWdMd1BiMGxCUE5iK1RCeWlCdTBHawphWkRmeEZHL3FiSWZKeG1hbGpacmQ1TVA2TWQ0L3dPNk1xbStDaVJ0ZTVsWDRWbUxUcG1YeXY5K1cyVEc0aVJpCkozWW5vckoyN2RXQ2JZT2FVMDJJbWFoQ2hoc2pQOXFHKzJWT2c3cDBpODZERUhReTEwVzJ0d0ZBT0lobnNMOXMKcVE0VytTb0Y5L2hRYTRUU2ExdVB2MFlvMU5rSmx1NjVHeGZXYUM3ZFNHdG5jVU02K1duK2s3Q1FBalN4Z3dxNgo0emxHMUpBNFVxamo0Y3BiRWJNQ0F3RUFBYU1qTUNFd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFFUU5iM3owYTlYQ2ZHU3BwdFZvMWcvTnVFTGsKWWc1K1IycFZQUTk2TEhEWVJZVXlVZ2tmY29SMlIrbE0rUDZGelZVZXpFTXhUMTU0OWFOQ1RIbHRiSHZCVzFoRgpZWjNsNjV0TmZmNXNCZm1obVE4UUJmbC9OVFN3UEZiU25vWGVSbDMzakpQN0xuMnlVSlpHZTdYbEpsYnFjWVRMCmtWbzJNb01wZFNoajA3cngvYjM5NmhMZEdSeDRqQmROcHYrcGhGbzhESnRDcTEzamZBWjY1R1EwbnRXUUNXVlkKRHFINDdxNDdDMk1WYU1QNlZ3NUV0SmpIaUlmcDVTbXVpdDdPTHMwc3VnaXFaQWc4STZ4OWJ0WGRrTkxGZWphYwo0eXJCQkpjVnVWN055MGtEVmcyc0dzTm5Xc3RhVnJhZ243V1RCbUNUWmlVSElnQXpkd0poZ0lpWXJVQT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
     server: https://test.elb.us-west-2.amazonaws.com:7777
-  name: sandbox-test
+  name: sandbox-a61631
 contexts:
 - context:
-    cluster: sandbox-test
-    user: kubernetes-admin
-  name: kubernetes-admin@sandbox-test
-current-context: kubernetes-admin@sandbox-test
+    cluster: sandbox-a61631
+    user: engineering-sandbox-a61631
+  name: sandbox
+- context:
+    cluster: sandbox-a61631
+    user: engineering-sandbox-a61631
+  name: sandbox-a61631
+- context:
+    cluster: sandbox-111111
+    user: engineering-sandbox-111111
+  name: sandbox-111111
+current-context: sandbox
 kind: Config
 preferences: {}
 users:
-- name: kubernetes-admin
+- name: engineering-sandbox-a61631
   user:
     exec:
       apiVersion: client.authentication.k8s.io/v1alpha1
@@ -21,7 +29,19 @@ users:
       args:
         - "token"
         - "-i"
-        - "sandbox-test"
+        - "sandbox-a61631"
+      env:
+      - name: AWS_PROFILE
+        value: sandbox
+- name: engineering-sandbox-111111
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1alpha1
+      command: aws-iam-authenticator
+      args:
+        - "token"
+        - "-i"
+        - "sandbox-111111"
       env:
       - name: AWS_PROFILE
         value: sandbox
