@@ -8,8 +8,8 @@ contexts:
 - context:
     cluster: sandbox-test
     user: kubernetes-admin
-  name: BLAH
-current-context: kubernetes-admin@sandbox-test
+  name: EGG
+current-context: NOT_EGG
 kind: Config
 preferences: {}
 users:

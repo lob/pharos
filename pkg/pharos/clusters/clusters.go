@@ -26,6 +26,5 @@ $HOME/.kube/config, unless otherwise specified.`,
 }
 
 func init() {
-	ClustersCmd.AddCommand(SwitchCmd)
 	ClustersCmd.Flags().StringVarP(&file, "file", "f", "", "specify kubeconfig file")
 }

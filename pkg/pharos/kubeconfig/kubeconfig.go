@@ -3,7 +3,6 @@ package kubeconfig
 import (
 	"errors"
 	"os"
-	"reflect"
 
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
@@ -34,18 +33,15 @@ func FilePath(kubeConfigFile string) string {
 }
 
 // ConfigFromFile returns a struct containing kubeconfig information from a file
+// Empty or missing files result in empty kubeconfig structs, not an error
+// Function source: https://github.com/kubernetes/client-go/blob/88ff0afc48bbf242f66f2f0c8d5c26b253e6561c/tools/clientcmd/config.go#L471
 func ConfigFromFile(filename string) (*clientcmdapi.Config, error) {
 	kubeConfig, err := clientcmd.LoadFromFile(filename)
 	if err != nil && !os.IsNotExist(err) {
 		return nil, err
 	}
 	if kubeConfig == nil {
-		return kubeConfig, errors.New("unable to load kubeconfig file")
-	}
-
-	// If the kubeconfig struct is empty, this indicates an error retrieving the kubeconfig
-	if reflect.DeepEqual(kubeConfig, clientcmdapi.NewConfig()) {
-		return nil, errors.New("kubeconfig file is malformed or empty")
+		kubeConfig = clientcmdapi.NewConfig()
 	}
 
 	return kubeConfig, nil
