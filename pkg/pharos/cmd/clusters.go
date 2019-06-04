@@ -22,7 +22,7 @@ $HOME/.kube/config, unless otherwise specified.`,
 func runClusters(kubeConfigFile string) error {
 	clusterName, err := kubeconfig.CurrentCluster(kubeConfigFile)
 	if err != nil {
-		return errors.Wrap(err, "ERROR: Unable to retrieve cluster - %s\n")
+		return errors.Wrap(err, "Unable to retrieve cluster")
 	}
 	fmt.Println(clusterName)
 	return nil
