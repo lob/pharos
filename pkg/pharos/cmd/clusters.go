@@ -1,9 +1,10 @@
-package clusters
+package cmd
 
 import (
 	"fmt"
 
 	"github.com/lob/pharos/pkg/pharos/kubeconfig"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -15,14 +16,16 @@ var ClustersCmd = &cobra.Command{
 	Short: "Print current cluster",
 	Long: `Prints current cluster from the context in the kubeconfig file at
 $HOME/.kube/config, unless otherwise specified.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		clusterName, err := kubeconfig.CurrentCluster(file)
-		if err != nil {
-			fmt.Printf("ERROR: Unable to retrieve cluster - %s\n", err.Error())
-		} else {
-			fmt.Println(clusterName)
-		}
-	},
+	RunE: func(cmd *cobra.Command, args []string) error { return runClusters(file) },
+}
+
+func runClusters(kubeConfigFile string) error {
+	clusterName, err := kubeconfig.CurrentCluster(kubeConfigFile)
+	if err != nil {
+		return errors.Wrap(err, "ERROR: Unable to retrieve cluster - %s\n")
+	}
+	fmt.Println(clusterName)
+	return nil
 }
 
 func init() {

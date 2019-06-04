@@ -10,10 +10,10 @@ import (
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
-const Config string = "../fixtures/config"
-const MalformedConfig string = "../fixtures/malformed"
-const EmptyConfig string = "../fixtures/empty"
-const NonExistentConfig string = "../fixtures/nonexistent"
+const Config string = "../testdata/config"
+const MalformedConfig string = "../testdata/malformed"
+const EmptyConfig string = "../testdata/empty"
+const NonExistentConfig string = "../testdata/nonexistent"
 
 func TestCurrentCluster(t *testing.T) {
 	t.Run("successfully retrieves current cluster", func(tt *testing.T) {
@@ -46,7 +46,7 @@ func TestFilePath(t *testing.T) {
 
 	t.Run("returns the file name that is passed in", func(tt *testing.T) {
 		kubeConfigFile := FilePath(Config)
-		assert.Equal(t, "../fixtures/config", kubeConfigFile)
+		assert.Equal(t, "../testdata/config", kubeConfigFile)
 	})
 }
 
