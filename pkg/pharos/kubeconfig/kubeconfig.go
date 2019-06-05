@@ -15,7 +15,7 @@ func CurrentCluster(kubeConfigFile string) (string, error) {
 		return "", err
 	}
 
-	// make sure that current context exists
+	// Make sure that current context exists.
 	context := kubeConfig.Contexts[kubeConfig.CurrentContext]
 	if context == nil {
 		return "", errors.New("context not found")

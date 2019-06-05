@@ -21,6 +21,9 @@ func Execute() error {
 func init() {
 	rootCmd.Flags().BoolP("version", "v", false, "print pharos version number")
 
+	// Prevent usage message from being printed out upon command error.
+	rootCmd.SilenceUsage = true
+
 	// Add child commands.
 	rootCmd.AddCommand(ClustersCmd)
 }
