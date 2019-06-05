@@ -10,16 +10,16 @@ import (
 
 var file string
 
-// ClustersCmd is the pharos clusters command.
-var ClustersCmd = &cobra.Command{
-	Use:   "clusters",
+// CurrentCmd is the pharos clusters current command.
+var CurrentCmd = &cobra.Command{
+	Use:   "current",
 	Short: "Print current cluster",
 	Long: `Prints current cluster from the context in the kubeconfig file at
 $HOME/.kube/config, unless otherwise specified.`,
-	RunE: func(cmd *cobra.Command, args []string) error { return runClusters(file) },
+	RunE: func(cmd *cobra.Command, args []string) error { return runCurrent(file) },
 }
 
-func runClusters(kubeConfigFile string) error {
+func runCurrent(kubeConfigFile string) error {
 	clusterName, err := kubeconfig.CurrentCluster(kubeConfigFile)
 	if err != nil {
 		return errors.Wrap(err, "Unable to retrieve cluster")
@@ -29,5 +29,5 @@ func runClusters(kubeConfigFile string) error {
 }
 
 func init() {
-	ClustersCmd.Flags().StringVarP(&file, "file", "f", "", "specify kubeconfig file")
+	CurrentCmd.Flags().StringVarP(&file, "file", "f", "", "specify kubeconfig file")
 }

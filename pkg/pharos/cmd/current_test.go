@@ -12,14 +12,14 @@ const (
 	malformedConfig = "../testdata/malformed"
 )
 
-func TestRunClusters(t *testing.T) {
+func TestRunCurrent(t *testing.T) {
 	t.Run("successfully retrieves current cluster", func(tt *testing.T) {
-		err := runClusters(config)
+		err := runCurrent(config)
 		require.NoError(tt, err)
 	})
 
 	t.Run("errors successfully when retrieving from malformed config", func(tt *testing.T) {
-		err := runClusters(malformedConfig)
+		err := runCurrent(malformedConfig)
 		require.Error(tt, err)
 		assert.Contains(tt, err.Error(), "Unable to retrieve cluster")
 	})

@@ -1,9 +1,9 @@
 package kubeconfig
 
 import (
-	"errors"
 	"os"
 
+	"github.com/pkg/errors"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
@@ -12,7 +12,7 @@ import (
 func CurrentCluster(kubeConfigFile string) (string, error) {
 	kubeConfig, err := configFromFile(filePath(kubeConfigFile))
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "unable to load config file")
 	}
 
 	// Make sure that current context exists.
