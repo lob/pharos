@@ -10,7 +10,7 @@ import (
 
 var file string
 
-// ClustersCmd is the pharos clusters command
+// ClustersCmd is the pharos clusters command.
 var ClustersCmd = &cobra.Command{
 	Use:   "clusters",
 	Short: "Print current cluster",

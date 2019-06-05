@@ -6,29 +6,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const Config string = "../testdata/config"
-const MalformedConfig string = "../testdata/malformed"
-const NonExistentConfig string = "../testdata/nonexistent"
-const EmptyConfig string = "../testdata/empty"
+const (
+	config          = "../testdata/config"
+	malformedConfig = "../testdata/malformed"
+)
 
 func TestRunClusters(t *testing.T) {
 	t.Run("successfully retrieves current cluster", func(tt *testing.T) {
-		err := runClusters(Config)
-		assert.NoError(t, err)
+		err := runClusters(config)
+		assert.NoError(tt, err)
 	})
 
-	t.Run("errors when reading from malformed config file", func(tt *testing.T) {
-		err := runClusters(MalformedConfig)
-		assert.Error(t, err)
-	})
-
-	t.Run("errors when reading from nonexistent config file", func(tt *testing.T) {
-		err := runClusters(NonExistentConfig)
-		assert.Error(t, err)
-	})
-
-	t.Run("errors when reading from empty config file", func(tt *testing.T) {
-		err := runClusters(EmptyConfig)
-		assert.Error(t, err)
+	t.Run("errors successfully when retrieving from malformed config", func(tt *testing.T) {
+		err := runClusters(malformedConfig)
+		assert.Error(tt, err)
+		assert.Contains(tt, err.Error(), "Unable to retrieve cluster")
 	})
 }

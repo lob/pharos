@@ -32,14 +32,14 @@ jobs:
       - run:
           name: Run linter
           command: make lint
-      # - run:
-      #     name: Run tests
-      #     command: make test
-      # - run:
-      #     name: Enforce coverage
-      #     command: make enforce
-      # - store_artifacts:
-      #     path: coverage.out
+      - run:
+          name: Run tests
+          command: make test
+      - run:
+          name: Enforce coverage
+          command: make enforce
+      - store_artifacts:
+          path: coverage.out
 
 experimental:
   notify:
