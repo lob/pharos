@@ -28,3 +28,15 @@
 [prune]
   go-tests = true
   unused-packages = true
+
+[[override]]
+  name = "k8s.io/api"
+  version = "kubernetes-1.14.0"
+
+[[override]]
+  name = "k8s.io/apimachinery"
+  version = "kubernetes-1.14.0"
+
+[[override]]
+  name = "k8s.io/client-go"
+  version = "v11.0.0"

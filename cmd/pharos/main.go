@@ -1,9 +1,14 @@
 package main
 
 import (
-	"fmt"
+	"os"
+
+	"github.com/lob/pharos/pkg/pharos/cmd"
 )
 
 func main() {
-	fmt.Println("Hello world")
+	err := cmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
 }

@@ -1,0 +1,31 @@
+MALFORMEDFILEapiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: Q=
+    server: https://test.elb.us-west-2.amazonaws.com:7777
+  name: sandbox-a61631
+contexts:
+- context:
+    cluster: sandbox-a61631
+    user: engineering-sandbox-a61631
+  name: EGG
+- context:
+    cluster: sandbox-a61631
+    user: engineering-sandbox-a61631
+  name: sandbox-a61631
+current-context: NOT_EGG
+kind: Config
+preferences: {}
+users:
+- name: engineering-sandbox-a61631
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1alpha1
+      command: aws-iam-authenticator
+      args:
+        - "token"
+        - "-i"
+        - "sandbox-a61631"
+      env:
+      - name: AWS_PROFILE
+        value: sandbox
