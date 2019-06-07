@@ -16,8 +16,8 @@ func CurrentCluster(kubeConfigFile string) (string, error) {
 	}
 
 	// Make sure that current context exists.
-	context := kubeConfig.Contexts[kubeConfig.CurrentContext]
-	if context == nil {
+	_, ok := kubeConfig.Contexts[kubeConfig.CurrentContext]
+	if !ok {
 		return "", errors.New("context not found")
 	}
 
@@ -35,15 +35,13 @@ func filePath(kubeConfigFile string) string {
 }
 
 // configFromFile returns a struct containing kubeconfig information from a file.
-// Missing files result in empty kubeconfig struct and an error.
+// Does not differentiate between errors resulting from a missing file and errors
+// from reading from a malformed config.
 // Function source: https://github.com/kubernetes/client-go/blob/88ff0afc48bbf242f66f2f0c8d5c26b253e6561c/tools/clientcmd/config.go#L471
 func configFromFile(fileName string) (*clientcmdapi.Config, error) {
 	kubeConfig, err := clientcmd.LoadFromFile(fileName)
-	if err != nil && !os.IsNotExist(err) {
+	if err != nil {
 		return nil, err
-	}
-	if kubeConfig == nil {
-		return clientcmdapi.NewConfig(), errors.New("file not found")
 	}
 	return kubeConfig, nil
 }

@@ -39,7 +39,7 @@ func TestCurrentCluster(t *testing.T) {
 	t.Run("errors when reading from nonexistent config file", func(tt *testing.T) {
 		_, err := CurrentCluster(nonExistentConfig)
 		require.Error(tt, err)
-		assert.Contains(tt, err.Error(), "file not found")
+		assert.Contains(tt, err.Error(), "no such file or directory")
 	})
 }
 
@@ -51,14 +51,15 @@ func TestFilePath(t *testing.T) {
 
 	t.Run("returns the file name that is passed in", func(tt *testing.T) {
 		kubeConfigFile := filePath(config)
-		assert.Equal(tt, "../testdata/config", kubeConfigFile)
+		assert.Equal(tt, config, kubeConfigFile)
 	})
 }
 
 func TestConfigFromFile(t *testing.T) {
 	t.Run("successfully loads from config file", func(tt *testing.T) {
-		_, err := configFromFile(config)
+		kubeConfig, err := configFromFile(config)
 		require.NoError(tt, err)
+		assert.NotNil(tt, kubeConfig)
 	})
 
 	t.Run("returns empty kubeconfig struct and no error when loading from empty config file", func(tt *testing.T) {
@@ -67,10 +68,9 @@ func TestConfigFromFile(t *testing.T) {
 		assert.True(tt, reflect.DeepEqual(kubeConfig, clientcmdapi.NewConfig()))
 	})
 
-	t.Run("returns empty kubeconfig struct and error when loading from nonexistent file", func(tt *testing.T) {
+	t.Run("returns nil and error when loading from nonexistent file", func(tt *testing.T) {
 		kubeConfig, err := configFromFile(nonExistentConfig)
 		require.Error(tt, err)
-		assert.Contains(tt, err.Error(), "file not found")
-		assert.True(tt, reflect.DeepEqual(kubeConfig, clientcmdapi.NewConfig()))
+		assert.Nil(tt, kubeConfig)
 	})
 }

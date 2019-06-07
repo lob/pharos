@@ -21,6 +21,6 @@ func TestRunCurrent(t *testing.T) {
 	t.Run("errors successfully when retrieving from malformed config", func(tt *testing.T) {
 		err := runCurrent(malformedConfig)
 		require.Error(tt, err)
-		assert.Contains(tt, err.Error(), "Unable to retrieve cluster")
+		assert.Contains(tt, err.Error(), "unable to retrieve cluster")
 	})
 }
