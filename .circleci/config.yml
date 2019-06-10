@@ -3,6 +3,12 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.12.5
+      - image: circleci/postgres:11.3
+        environment:
+          POSTGRES_USER: pharos_admin
+          POSTGRES_DB: pharos_test
+    environment:
+      - ENV: "test"
     working_directory: /go/src/github.com/lob/pharos
     steps:
       - restore_cache:

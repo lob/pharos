@@ -15,7 +15,18 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-w -s" -o ./bin/pharos-api-serve
 
 FROM alpine:3.8
 
-RUN apk --no-cache add ca-certificates
+RUN apk update \
+  && apk upgrade \
+  && apk add --no-cache ca-certificates \
+  && update-ca-certificates
+
+# Add AWS RDS CA bundle and split the bundle into individual certs (prefixed with cert)
+# See http://blog.swwomm.com/2015/02/importing-new-rds-ca-certificate-into.html
+ADD https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem /tmp/rds-ca/aws-rds-ca-bundle.pem
+RUN cd /tmp/rds-ca && awk '/-BEGIN CERTIFICATE-/{close(x); x=++i;}{print > "cert"x;}' ./aws-rds-ca-bundle.pem \
+    && for CERT in /tmp/rds-ca/cert*; do mv $CERT /usr/local/share/ca-certificates/aws-rds-ca-$(basename $CERT).crt; done \
+    && rm -rf /tmp/rds-ca \
+    && update-ca-certificates
 
 COPY --from=build /go/src/github.com/lob/pharos/bin/pharos-api-server .
 

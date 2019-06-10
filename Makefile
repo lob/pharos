@@ -9,6 +9,12 @@ GOTOOLS := \
 	github.com/golang/dep/cmd/dep \
 	golang.org/x/tools/cmd/cover \
 
+PSQL := $(shell command -v psql 2> /dev/null)
+
+DATABASE_USER             ?= pharos_admin
+DATABASE_NAME_DEVELOPMENT ?= pharos
+DATABASE_NAME_TEST        ?= pharos_test
+
 default: build
 
 .PHONY: build
@@ -42,11 +48,37 @@ lint:
 	@echo "---> Linting"
 	$(BIN_DIR)/golangci-lint run
 
+.PHONY: migrate
+migrate:
+	@echo "---> Migrating"
+	go run cmd/migrations/*.go migrate
+
+.PHONY: rollback
+rollback:
+	@echo "---> Rolling back"
+	go run cmd/migrations/*.go rollback
+
 .PHONY: setup
 setup:
 	@echo "--> Installing development tools"
 	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(BIN_DIR) v1.16.0
 	go get -u $(GOTOOLS)
+ifdef PSQL
+	dropdb --if-exists $(DATABASE_NAME_DEVELOPMENT)
+	dropdb --if-exists $(DATABASE_NAME_TEST)
+	dropuser --if-exists $(DATABASE_USER)
+	createuser --createdb $(DATABASE_USER)
+	createdb -U $(DATABASE_USER) $(DATABASE_NAME_DEVELOPMENT)
+	createdb -U $(DATABASE_USER) $(DATABASE_NAME_TEST)
+	make install
+	make migrate
+	ENVIRONMENT=test make migrate
+	make seed
+	ENVIRONMENT=test make seed
+else
+	@echo "Skipping database setup"
+endif
+
 
 .PHONY: start
 start:
