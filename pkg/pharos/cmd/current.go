@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/lob/pharos/pkg/pharos/kubeconfig"
 	"github.com/pkg/errors"
@@ -26,5 +27,5 @@ func runCurrent(kubeConfigFile string) error {
 }
 
 func init() {
-	CurrentCmd.Flags().StringVarP(&file, "file", "f", "", "specify kubeconfig file")
+	CurrentCmd.Flags().StringVarP(&file, "file", "f", os.Getenv("HOME")+"/.kube/config", "specify kubeconfig file")
 }

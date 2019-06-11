@@ -1,7 +1,6 @@
 package kubeconfig
 
 import (
-	"os"
 	"reflect"
 	"testing"
 
@@ -97,18 +96,6 @@ func TestSwitchCluster(t *testing.T) {
 		err := SwitchCluster(nonExistentConfig, "sandbox")
 		require.Error(tt, err)
 		assert.Contains(tt, err.Error(), "no such file or directory")
-	})
-}
-
-func TestFilePath(t *testing.T) {
-	t.Run("defaults to $HOME/.kube/config when empty string is passed in", func(tt *testing.T) {
-		kubeConfigFile := filePath("")
-		assert.Equal(tt, os.Getenv("HOME")+"/.kube/config", kubeConfigFile)
-	})
-
-	t.Run("returns the file name that is passed in", func(tt *testing.T) {
-		kubeConfigFile := filePath(config)
-		assert.Equal(tt, config, kubeConfigFile)
 	})
 }
 

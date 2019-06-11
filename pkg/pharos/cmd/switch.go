@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/lob/pharos/pkg/pharos/kubeconfig"
 	"github.com/pkg/errors"
@@ -40,5 +41,5 @@ func argSwitch(args []string) error {
 }
 
 func init() {
-	SwitchCmd.Flags().StringVarP(&file, "file", "f", "", "specify designated kubeconfig file (defaults to $HOME/.kube/config)")
+	SwitchCmd.Flags().StringVarP(&file, "file", "f", os.Getenv("HOME")+"/.kube/config", "specify designated kubeconfig file (defaults to $HOME/.kube/config)")
 }
