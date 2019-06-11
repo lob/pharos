@@ -69,16 +69,15 @@ ifdef PSQL
 	dropuser --if-exists $(DATABASE_USER)
 	createuser --createdb $(DATABASE_USER)
 	createdb -U $(DATABASE_USER) $(DATABASE_NAME_DEVELOPMENT)
+	psql -U $(DATABASE_USER) -d $(DATABASE_NAME_DEVELOPMENT) -c "ALTER DATABASE $(DATABASE_NAME_DEVELOPMENT) SET timezone TO 'UTC'"
 	createdb -U $(DATABASE_USER) $(DATABASE_NAME_TEST)
+	psql -U $(DATABASE_USER) -d $(DATABASE_NAME_TEST) -c "ALTER DATABASE $(DATABASE_NAME_TEST) SET timezone TO 'UTC'"
 	make install
 	make migrate
 	ENVIRONMENT=test make migrate
-	make seed
-	ENVIRONMENT=test make seed
 else
 	@echo "Skipping database setup"
 endif
-
 
 .PHONY: start
 start:
