@@ -1,9 +1,11 @@
 package kubeconfig
 
 import (
+	"os"
 	"reflect"
 	"testing"
 
+	"github.com/lob/pharos/pkg/util/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
@@ -44,23 +46,21 @@ func TestCurrentCluster(t *testing.T) {
 
 func TestSwitchCluster(t *testing.T) {
 	t.Run("successfully switches to cluster", func(tt *testing.T) {
-		// Switch back to context "sandbox".
-		defer func() {
-			err := SwitchCluster(config, "sandbox")
-			require.NoError(tt, err)
-		}()
+		// Create temporary test config file and defer cleanup.
+		configFile := test.CopyTestFile(tt, "../testdata", "switch", config)
+		defer os.Remove(configFile)
 
 		// Check that current cluster is "sandbox".
-		cluster, err := CurrentCluster(config)
+		cluster, err := CurrentCluster(configFile)
 		require.NoError(tt, err)
 		assert.Equal(tt, "sandbox", cluster)
 
 		// Switch to context "sandbox-111111".
-		err = SwitchCluster(config, "sandbox-111111")
+		err = SwitchCluster(configFile, "sandbox-111111")
 		require.NoError(tt, err)
 
 		// Check that switch was successful.
-		cluster, err = CurrentCluster(config)
+		cluster, err = CurrentCluster(configFile)
 		require.NoError(tt, err)
 		assert.Equal(tt, "sandbox-111111", cluster)
 	})
