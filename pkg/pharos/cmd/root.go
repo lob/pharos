@@ -4,6 +4,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Declare some variables to be used as flags in various commands.
+var file string
+
 // rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{
 	Use:     "pharos",
@@ -12,8 +15,8 @@ var rootCmd = &cobra.Command{
 	Version: "1.0",
 }
 
-// ClustersCmd is the pharos clusters command.
-var ClustersCmd = &cobra.Command{Use: "clusters"}
+// clustersCmd is the pharos clusters command.
+var clustersCmd = &cobra.Command{Use: "clusters"}
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -28,6 +31,7 @@ func init() {
 	rootCmd.SilenceUsage = true
 
 	// Add child commands.
-	rootCmd.AddCommand(ClustersCmd)
-	ClustersCmd.AddCommand(CurrentCmd)
+	rootCmd.AddCommand(clustersCmd)
+	clustersCmd.AddCommand(CurrentCmd)
+	clustersCmd.AddCommand(SwitchCmd)
 }

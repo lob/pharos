@@ -7,11 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	config          = "../testdata/config"
-	malformedConfig = "../testdata/malformed"
-)
-
 func TestRunCurrent(t *testing.T) {
 	t.Run("successfully retrieves current cluster", func(tt *testing.T) {
 		err := runCurrent(config)

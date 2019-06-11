@@ -1,8 +1,6 @@
 package kubeconfig
 
 import (
-	"os"
-
 	"github.com/pkg/errors"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
@@ -10,7 +8,7 @@ import (
 
 // CurrentCluster returns current context name.
 func CurrentCluster(kubeConfigFile string) (string, error) {
-	kubeConfig, err := configFromFile(filePath(kubeConfigFile))
+	kubeConfig, err := configFromFile(kubeConfigFile)
 	if err != nil {
 		return "", errors.Wrap(err, "unable to load config file")
 	}
@@ -24,14 +22,23 @@ func CurrentCluster(kubeConfigFile string) (string, error) {
 	return kubeConfig.CurrentContext, nil
 }
 
-// filePath returns final kubeconfig file path.
-// It defaults to "$HOME/.kube/config" if empty string is passed in.
-func filePath(kubeConfigFile string) string {
-	if kubeConfigFile == "" {
-		kubeConfigFile = os.Getenv("HOME") + "/.kube/config"
+// SwitchCluster switches current context to given cluster or context name.
+func SwitchCluster(kubeConfigFile string, context string) error {
+	kubeConfig, err := configFromFile(kubeConfigFile)
+	if err != nil {
+		return err
 	}
 
-	return kubeConfigFile
+	// Check if there is a context corresponding to the given context name or cluster.
+	_, ok := kubeConfig.Contexts[context]
+	if !ok {
+		return errors.New("cluster does not exist in context")
+	}
+
+	// Switch to new cluster.
+	kubeConfig.CurrentContext = context
+
+	return clientcmd.WriteToFile(*kubeConfig, kubeConfigFile)
 }
 
 // configFromFile returns a struct containing kubeconfig information from a file.
