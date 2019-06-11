@@ -30,5 +30,5 @@ func init() {
 
 	opts := migrations.MigrationOptions{}
 
-	migrations.Register("20190610154448_craete_clusters_table", up, down, opts)
+	migrations.Register("20190610154448_create_clusters_table", up, down, opts)
 }
