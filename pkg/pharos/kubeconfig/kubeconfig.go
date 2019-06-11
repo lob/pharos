@@ -33,7 +33,7 @@ func SwitchCluster(kubeConfigFile string, context string) error {
 	}
 
 	// Check if there is a context corresponding to the given context name or cluster.
-	_, ok := (kubeConfig.Contexts[context])
+	_, ok := kubeConfig.Contexts[context]
 	if !ok {
 		return errors.New("cluster does not exist in context")
 	}

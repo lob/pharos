@@ -8,13 +8,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// CurrentCmd is the pharos clusters command.
+// CurrentCmd is the pharos clusters current command.
 var CurrentCmd = &cobra.Command{
 	Use:   "current",
 	Short: "Print current cluster",
-	Long: `Prints current cluster from the context in the kubeconfig file at
-$HOME/.kube/config, unless otherwise specified.`,
-	RunE: func(cmd *cobra.Command, args []string) error { return runCurrent(file) },
+	Long:  "Prints current cluster from the context in the kubeconfig file at $HOME/.kube/config, unless otherwise specified.",
+	RunE:  func(cmd *cobra.Command, args []string) error { return runCurrent(file) },
 }
 
 func runCurrent(kubeConfigFile string) error {

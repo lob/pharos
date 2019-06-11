@@ -3,6 +3,7 @@ package cmd
 import (
 	"testing"
 
+	"github.com/lob/pharos/pkg/pharos/kubeconfig"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -11,6 +12,11 @@ func TestRunSwitch(t *testing.T) {
 	t.Run("successfully switches to existing cluster", func(tt *testing.T) {
 		err := runSwitch(config, "sandbox-111111")
 		require.NoError(tt, err)
+
+		// Check that switch was successful.
+		clusterName, err := kubeconfig.CurrentCluster(config)
+		require.NoError(tt, err)
+		require.Equal(tt, "sandbox-111111", clusterName)
 
 		// Switch back to previous cluster.
 		err = runSwitch(config, "sandbox")
