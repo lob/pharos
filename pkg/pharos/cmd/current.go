@@ -13,7 +13,7 @@ import (
 var CurrentCmd = &cobra.Command{
 	Use:   "current",
 	Short: "Print current cluster",
-	Long:  "Prints current cluster from the context in the kubeconfig file at $HOME/.kube/config, unless otherwise specified.",
+	Long:  "Prints current cluster in the designated kubeconfig file.",
 	RunE:  func(cmd *cobra.Command, args []string) error { return runCurrent(file) },
 }
 
@@ -27,5 +27,5 @@ func runCurrent(kubeConfigFile string) error {
 }
 
 func init() {
-	CurrentCmd.Flags().StringVarP(&file, "file", "f", os.Getenv("HOME")+"/.kube/config", "specify kubeconfig file")
+	CurrentCmd.Flags().StringVarP(&file, "file", "f", os.Getenv("HOME")+"/.kube/config", "specify kubeconfig file (defaults to $HOME/.kube/config)")
 }

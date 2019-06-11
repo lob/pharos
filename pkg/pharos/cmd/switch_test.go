@@ -10,6 +10,12 @@ import (
 
 func TestRunSwitch(t *testing.T) {
 	t.Run("successfully switches to existing cluster", func(tt *testing.T) {
+		// Switch back to context "sandbox".
+		defer func() {
+			err := runSwitch(config, "sandbox")
+			require.NoError(tt, err)
+		}()
+
 		err := runSwitch(config, "sandbox-111111")
 		require.NoError(tt, err)
 
@@ -17,10 +23,6 @@ func TestRunSwitch(t *testing.T) {
 		clusterName, err := kubeconfig.CurrentCluster(config)
 		require.NoError(tt, err)
 		require.Equal(tt, "sandbox-111111", clusterName)
-
-		// Switch back to previous cluster.
-		err = runSwitch(config, "sandbox")
-		require.NoError(tt, err)
 	})
 
 	t.Run("errors when switching to a cluster that does not exist", func(tt *testing.T) {

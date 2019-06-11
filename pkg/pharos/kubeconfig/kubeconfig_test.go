@@ -44,6 +44,13 @@ func TestCurrentCluster(t *testing.T) {
 
 func TestSwitchCluster(t *testing.T) {
 	t.Run("successfully switches to cluster", func(tt *testing.T) {
+		// Switch back to context "sandbox".
+		defer func() {
+			err := SwitchCluster(config, "sandbox")
+			require.NoError(tt, err)
+		}()
+
+		// Check that current cluster is "sandbox".
 		cluster, err := CurrentCluster(config)
 		require.NoError(tt, err)
 		assert.Equal(tt, "sandbox", cluster)
@@ -56,12 +63,6 @@ func TestSwitchCluster(t *testing.T) {
 		cluster, err = CurrentCluster(config)
 		require.NoError(tt, err)
 		assert.Equal(tt, "sandbox-111111", cluster)
-
-		// Switch back to context "sandbox".
-		defer func() {
-			err := SwitchCluster(config, "sandbox")
-			require.NoError(tt, err)
-		}()
 	})
 
 	t.Run("errors when switching to a cluster that does not exist", func(tt *testing.T) {
