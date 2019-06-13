@@ -52,6 +52,25 @@
   version = "v8.0.4"
 
 [[projects]]
+  digest = "1:e1ff887e232b2d8f4f7c7db15a5fac7be418025afc4dda53c59c765dbb5aa6b4"
+  name = "github.com/go-playground/locales"
+  packages = [
+    ".",
+    "currency",
+  ]
+  pruneopts = "UT"
+  revision = "f63010822830b6fe52288ee52d5a1151088ce039"
+  version = "v0.12.1"
+
+[[projects]]
+  digest = "1:e022cf244bcac1b6ef933f1a2e0adcf6a6dfd7b872d8d41e4d4179bb09a87cbc"
+  name = "github.com/go-playground/universal-translator"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "b32fa301c9fe55953584134cb6853a13c87ec0a1"
+  version = "v0.16.0"
+
+[[projects]]
   digest = "1:bed9d72d596f94e65fff37f4d6c01398074a6bb1c3f3ceff963516bd01db6ff5"
   name = "github.com/gofrs/uuid"
   packages = ["."]
@@ -136,6 +155,14 @@
   pruneopts = "UT"
   revision = "ab0bfd9a5eba33a8c364bf3390d809ed23c31f97"
   version = "v0.2.9"
+
+[[projects]]
+  digest = "1:6782ffc812e8e700e6952ede1e60487ff1fd9da489eff762985be662a7cfc431"
+  name = "github.com/leodido/go-urn"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "70078a794e8ea4b497ba7c19a78cd60f90ccf0f4"
+  version = "v1.1.0"
 
 [[projects]]
   digest = "1:8a4073008a71ff9009d35de4f9ef33bc8e814d79f284961bbbf8c5ae97fabad3"
@@ -234,6 +261,14 @@
   pruneopts = "UT"
   revision = "acf3980132bfcdc48638724e6e3d9e5749b85999"
   version = "v1.14.3"
+
+[[projects]]
+  digest = "1:700753018409094bbf9b4e19ea0e147458b3aaadf677da3a44ec082d3c075506"
+  name = "github.com/segmentio/go-snakecase"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5e4a23e7a7bf2d4ede976046611e07ffba02224c"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:e096613fb7cf34743d49af87d197663cfccd61876e2219853005a57baedfa562"
@@ -378,6 +413,25 @@
   version = "v1.6.1"
 
 [[projects]]
+  digest = "1:dad6cd59e8bb8d209194efbd3850b5d054384a63061671bfc2a6b2cc0929c731"
+  name = "gopkg.in/go-playground/mold.v2"
+  packages = [
+    ".",
+    "modifiers",
+  ]
+  pruneopts = "UT"
+  revision = "6bc20ce40733e8e04c2fda4523a957dd8e198948"
+  version = "v2.2.0"
+
+[[projects]]
+  digest = "1:ee2db1a4b9111947da887ff2f8972dd2cc80906e521a2d856901fa699b4b51ee"
+  name = "gopkg.in/go-playground/validator.v9"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "884d31b8cad6a1ec877f2400d555924cea03bbea"
+  version = "v9.29.0"
+
+[[projects]]
   digest = "1:2d1fbdc6777e5408cabeb02bf336305e724b925ff4546ded0fa8715a7267922a"
   name = "gopkg.in/inf.v0"
   packages = ["."]
@@ -510,6 +564,9 @@
     "github.com/spf13/cobra",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/require",
+    "gopkg.in/go-playground/mold.v2",
+    "gopkg.in/go-playground/mold.v2/modifiers",
+    "gopkg.in/go-playground/validator.v9",
     "k8s.io/client-go/tools/clientcmd",
     "k8s.io/client-go/tools/clientcmd/api",
   ]

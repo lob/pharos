@@ -11,6 +11,7 @@ import (
 	logger "github.com/lob/logger-go"
 	metrics "github.com/lob/metrics-go"
 	"github.com/lob/pharos/pkg/pharos-api-server/application"
+	"github.com/lob/pharos/pkg/pharos-api-server/binder"
 	"github.com/lob/pharos/pkg/pharos-api-server/health"
 	"github.com/lob/pharos/pkg/pharos-api-server/recovery"
 	"github.com/lob/pharos/pkg/pharos-api-server/signals"
@@ -21,6 +22,9 @@ import (
 func New(app application.App) *http.Server {
 	e := echo.New()
 	log := logger.New()
+
+	b := binder.New()
+	e.Binder = b
 
 	e.Use(metrics.Middleware(app.Metrics))
 	e.Use(logger.Middleware())
