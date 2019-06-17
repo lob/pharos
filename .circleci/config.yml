@@ -8,7 +8,7 @@ jobs:
           POSTGRES_USER: pharos_admin
           POSTGRES_DB: pharos_test
     environment:
-      - ENV: "test"
+      - ENVIRONMENT: "test"
     working_directory: /go/src/github.com/lob/pharos
     steps:
       - restore_cache:
@@ -30,6 +30,9 @@ jobs:
       - run:
           name: Install dependencies
           command: make install
+      - run:
+          name: Run DB migration
+          command: make migrate
       - save_cache:
           key: vendor-{{ checksum "Gopkg.lock" }}
           paths:
