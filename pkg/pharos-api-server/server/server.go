@@ -12,6 +12,7 @@ import (
 	metrics "github.com/lob/metrics-go"
 	"github.com/lob/pharos/pkg/pharos-api-server/application"
 	"github.com/lob/pharos/pkg/pharos-api-server/binder"
+	"github.com/lob/pharos/pkg/pharos-api-server/clusters"
 	"github.com/lob/pharos/pkg/pharos-api-server/health"
 	"github.com/lob/pharos/pkg/pharos-api-server/recovery"
 	"github.com/lob/pharos/pkg/pharos-api-server/signals"
@@ -30,9 +31,13 @@ func New(app application.App) *http.Server {
 	e.Use(logger.Middleware())
 	e.Use(recovery.Middleware())
 
-	sentryecho.RegisterErrorHandler(e, &app.Sentry)
+	sentryecho.RegisterErrorHandlerWithOptions(e, sentryecho.Options{
+		Reporter:                  &app.Sentry,
+		EnableCustomErrorMessages: true,
+	})
 
 	health.RegisterRoutes(e)
+	clusters.RegisterRoutes(e, app)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", app.Config.Port),

@@ -72,5 +72,9 @@ func format(err validator.FieldError) string {
 		return fmt.Sprintf("%s must be a valid URL", err.Field())
 	}
 
+	if err.Tag() == "base64" {
+		return fmt.Sprintf("%s must be a valid base64 encoded string", err.Field())
+	}
+
 	return fmt.Sprintf("%s is invalid", err.Field())
 }

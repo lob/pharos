@@ -185,14 +185,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:52c64cab8a465de8d1b3d3c3332d5a73b57c1c48dee2a3a7b2a430990743a2be"
+  digest = "1:f94aa710ddf16841a1f4c2e7db1529e7b0486968d014558dc7368ff720bd61b1"
   name = "github.com/lob/sentry-echo"
   packages = [
     "pkg",
     "pkg/sentry",
   ]
   pruneopts = "UT"
-  revision = "9c3e83e828fedec690384703a85f883391208de7"
+  revision = "4b86a325ce2aa54cb3441ccefe57b0981bf62deb"
 
 [[projects]]
   digest = "1:7c084e0e780596dd2a7e20d25803909a9a43689c153de953520dfbc0b0e51166"
@@ -554,6 +554,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/go-pg/pg",
+    "github.com/go-pg/pg/orm",
     "github.com/labstack/echo",
     "github.com/lob/logger-go",
     "github.com/lob/metrics-go",

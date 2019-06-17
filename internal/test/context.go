@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/labstack/echo"
+	"github.com/lob/pharos/pkg/pharos-api-server/binder"
 )
 
 // NewContext returns a new echo.Context, and *httptest.ResponseRecorder to be
@@ -14,6 +15,7 @@ func NewContext(t *testing.T, method string, r io.Reader, ctype string) (echo.Co
 	t.Helper()
 
 	e := echo.New()
+	e.Binder = binder.New()
 	req := httptest.NewRequest(method, "/", r)
 	req.Header.Set(echo.HeaderContentType, ctype)
 	rec := httptest.NewRecorder()
