@@ -1,26 +1,27 @@
 package cmd
 
 import (
+	"os"
 	"testing"
 
 	"github.com/lob/pharos/pkg/pharos/kubeconfig"
+	"github.com/lob/pharos/pkg/util/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestRunSwitch(t *testing.T) {
 	t.Run("successfully switches to existing cluster", func(tt *testing.T) {
-		// Switch back to context "sandbox".
-		defer func() {
-			err := runSwitch(config, "sandbox")
-			require.NoError(tt, err)
-		}()
+		// Create temporary test config file and defer cleanup.
+		configFile := test.CopyTestFile(tt, "../testdata", "switch", config)
+		defer os.Remove(configFile)
 
-		err := runSwitch(config, "sandbox-111111")
+		// Switch to a different cluster.
+		err := runSwitch(configFile, "sandbox-111111")
 		require.NoError(tt, err)
 
 		// Check that switch was successful.
-		clusterName, err := kubeconfig.CurrentCluster(config)
+		clusterName, err := kubeconfig.CurrentCluster(configFile)
 		require.NoError(tt, err)
 		require.Equal(tt, "sandbox-111111", clusterName)
 	})
