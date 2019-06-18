@@ -124,7 +124,6 @@ func jsonResponse(arn, account, userid string) string {
 
 func TestSTSEndpoints(t *testing.T) {
 	verifier := tokenVerifier{}
-	chinaR := "sts.amazonaws.com.cn"
 	globalR := "sts.amazonaws.com"
 	usEast1R := "sts.us-east-1.amazonaws.com"
 	usEast2R := "sts.us-east-2.amazonaws.com"
@@ -143,7 +142,7 @@ func TestSTSEndpoints(t *testing.T) {
 	euNorth1R := "sts.eu-north-1.amazonaws.com"
 	saEast1R := "sts.sa-east-1.amazonaws.com"
 
-	hosts := []string{chinaR, globalR, usEast1R, usEast2R, usWest1R, usWest2R, apSouth1R, apNorthEast1R, apNorthEast2R, apSouthEast1R, apSouthEast2R, caCentral1R, euCenteral1R, euWest1R, euWest2R, euWest3R, euNorth1R, saEast1R}
+	hosts := []string{globalR, usEast1R, usEast2R, usWest1R, usWest2R, apSouth1R, apNorthEast1R, apNorthEast2R, apSouthEast1R, apSouthEast2R, caCentral1R, euCenteral1R, euWest1R, euWest2R, euWest3R, euNorth1R, saEast1R}
 
 	for _, host := range hosts {
 		if err := verifier.verifyHost(host); err != nil {
@@ -158,7 +157,6 @@ func TestVerifyTokenPreSTSValidations(t *testing.T) {
 	validationErrorTest(t, toToken(":ab:cd.af:/asda"), "missing protocol scheme")
 	validationErrorTest(t, toToken("http://"), "unexpected scheme")
 	validationErrorTest(t, toToken("https://google.com"), fmt.Sprintf("unexpected hostname %q in pre-signed URL", "google.com"))
-	validationErrorTest(t, toToken("https://sts.cn-north-1.amazonaws.com.cn/abc"), "unexpected path in pre-signed URL")
 	validationErrorTest(t, toToken("https://sts.amazonaws.com/abc"), "unexpected path in pre-signed URL")
 	validationErrorTest(t, toToken("https://sts.amazonaws.com/?action=NotGetCallerIdenity"), "unexpected action parameter in pre-signed URL")
 	validationErrorTest(t, toToken("https://sts.amazonaws.com/?action=GetCallerIdentity"), "X-Amz-Date parameter must be present in pre-signed URL")

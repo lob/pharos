@@ -24,7 +24,7 @@ import (
 
 const (
 	pharosPrefix = "pharos-v1."
-	hostRegexp   = `^sts(\.[a-z1-9\-]+)?\.amazonaws\.com(\.cn)?$`
+	hostRegexp   = `^sts(\.[a-z1-9\-]+)?\.amazonaws\.com$`
 )
 
 // Generator provides new tokens to be used for authenticating with the pharos-api-server.
