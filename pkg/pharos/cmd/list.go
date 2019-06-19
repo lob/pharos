@@ -17,7 +17,7 @@ var inactive bool
 // currently registered with pharos-api.
 var ListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "Retrieves a list of all clusters.",
+	Short: "Retrieves a list of all clusters",
 	Long:  "Retrieves a list of all clusters currently registered with Pharos.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		client, err := api.ClientFromConfig(pharosConfig)

@@ -44,3 +44,20 @@ func (c *Client) GetCluster(clusterID string) (model.Cluster, error) {
 
 	return cluster, nil
 }
+
+// UpdateCluster sends a POST request to the clusters/id endpoint of the Pharos API
+// and returns a Cluster containing the updated cluster.
+func (c *Client) UpdateCluster(clusterID string, active bool) (model.Cluster, error) {
+	var cluster model.Cluster
+	type temp struct {
+		Active bool `json:"active"`
+	}
+	update := &temp{Active: active}
+
+	err := c.send(http.MethodPost, fmt.Sprintf("clusters/%s", clusterID), nil, &update, &cluster)
+	if err != nil {
+		return cluster, errors.Wrapf(err, "failed to update cluster %s status to %t", clusterID, active)
+	}
+
+	return cluster, nil
+}
