@@ -175,7 +175,6 @@ func (v tokenVerifier) Verify(token string) (*Identity, error) {
 
 	req.Header.Set("accept", "application/json")
 
-	fmt.Println(parsedURL.String())
 	response, err := v.client.Do(req)
 	if err != nil {
 		return nil, errors.Wrap(err, "error performing AWS STS GET request")
