@@ -10,10 +10,11 @@ import (
 
 // Declare some variables to be used as flags in various commands.
 var (
-	file         string
 	dryRun       bool
-	pharosConfig string
+	environment  string
+	file         string
 	inactive     bool
+	pharosConfig string
 )
 
 // rootCmd represents the base command when called without any subcommands.
@@ -42,6 +43,7 @@ func init() {
 
 	// Add child commands.
 	rootCmd.AddCommand(clustersCmd)
+	clustersCmd.AddCommand(CreateCmd)
 	clustersCmd.AddCommand(CurrentCmd)
 	clustersCmd.AddCommand(DeleteCmd)
 	clustersCmd.AddCommand(GetCmd)

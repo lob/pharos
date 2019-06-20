@@ -33,6 +33,30 @@ func (c *Client) ListClusters(query map[string]string) ([]model.Cluster, error) 
 	return clusters, nil
 }
 
+// CreateCluster sends a POST request to the clusters endpoint of the Pharos API
+// and returns the Cluster that was created.
+func (c *Client) CreateCluster(id string, env string, authorityData string, server string) (model.Cluster, error) {
+	var cluster model.Cluster
+	newCluster := &struct {
+		ID                   string `json:"id"`
+		Environment          string `json:"environment"`
+		ServerURL            string `json:"server_url"`
+		ClusterAuthorityData string `json:"cluster_authority_data"`
+	}{
+		ID:                   id,
+		Environment:          env,
+		ClusterAuthorityData: authorityData,
+		ServerURL:            server,
+	}
+
+	err := c.send(http.MethodPost, "clusters", nil, newCluster, &cluster)
+	if err != nil {
+		return cluster, errors.Wrap(err, "failed to create cluster")
+	}
+
+	return cluster, nil
+}
+
 // GetCluster sends a GET request to the clusters/id endpoint of the Pharos API
 // and returns a Cluster.
 func (c *Client) GetCluster(clusterID string) (model.Cluster, error) {

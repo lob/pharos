@@ -9,9 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Declare a variable to be used as a flag.
-var environment string
-
 // ListCmd implements a CLI command that allows users to retrieve a list of all clusters
 // currently registered with pharos-api.
 var ListCmd = &cobra.Command{

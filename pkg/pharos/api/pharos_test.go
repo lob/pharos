@@ -11,6 +11,39 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestCreateCluster(t *testing.T) {
+	var testResponse = []byte(`{
+		"id":                     "production-pikachu",
+		"environment":            "production",
+		"server_url":             "https://prod.elb.us-west-2.amazonaws.com:6443",
+		"cluster_authority_data": "asdasd",
+		"deleted":                false,
+		"active":                 true
+	}`)
+
+	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		_, err := rw.Write(testResponse)
+		require.NoError(t, err)
+	}))
+	defer srv.Close()
+	tokenGenerator := test.NewGenerator()
+
+	t.Run("creates cluster successfully", func(tt *testing.T) {
+		c := NewClient(&config.Config{BaseURL: srv.URL}, tokenGenerator)
+		cluster, err := c.CreateCluster("production-pikachu", "production", "asdasd", "https://prod.elb.us-west-2.amazonaws.com:6443")
+		assert.NoError(tt, err)
+		assert.Equal(tt, "production-pikachu", cluster.ID)
+		assert.Equal(tt, false, cluster.Deleted)
+	})
+
+	t.Run("fails to create cluster using a bad client", func(tt *testing.T) {
+		c := NewClient(&config.Config{BaseURL: ""}, tokenGenerator)
+		cluster, err := c.CreateCluster("production-pikachu", "production", "asdasd", "https://prod.elb.us-west-2.amazonaws.com:6443")
+		assert.Error(tt, err)
+		assert.Equal(tt, "", cluster.ID)
+	})
+}
+
 func TestDeleteCluster(t *testing.T) {
 	testResponse := []byte(`{
 		"id":                     "production-pikachu",
