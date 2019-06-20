@@ -8,6 +8,18 @@ import (
 	"github.com/pkg/errors"
 )
 
+// DeleteCluster sends a DELETE request to the clusters endpoint of the Pharos API
+// and returns a Cluster containing the deleted cluster.
+func (c *Client) DeleteCluster(clusterID string) (model.Cluster, error) {
+	var cluster model.Cluster
+	err := c.send(http.MethodDelete, fmt.Sprintf("clusters/%s", clusterID), nil, nil, &cluster)
+	if err != nil {
+		return cluster, errors.Wrap(err, fmt.Sprintf("failed to delete cluster %s", clusterID))
+	}
+
+	return cluster, nil
+}
+
 // ListClusters sends a GET request to the clusters endpoint of the Pharos API
 // and returns an array of Clusters. Can also be called with query to retrieve
 // a certain subset of clusters.
