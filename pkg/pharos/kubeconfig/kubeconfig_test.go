@@ -57,7 +57,7 @@ func TestGetCluster(t *testing.T) {
 		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
 		"object":                 "cluster",
 		"active":                 false
-		}`)
+	}`)
 	var listResponse = []byte(`[{
 		"id":                     "sandbox-333333",
 		"environment":            "sandbox",

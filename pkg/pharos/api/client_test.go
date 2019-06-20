@@ -24,7 +24,7 @@ func TestClient(t *testing.T) {
 		"server_url": "https://prod.elb.us-west-2.amazonaws.com:6443",
 		"object": "cluster",
 		"active": true
-		}`)
+	}`)
 	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		_, err := rw.Write(testResponse)
 		require.NoError(t, err)

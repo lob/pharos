@@ -18,12 +18,12 @@ func TestRunGet(t *testing.T) {
 	t.Run("successfully merges information from a cluster into a kubeconfig file", func(tt *testing.T) {
 		// Set up dummy server for testing.
 		var testResponse = []byte(`[{
-		"id": "sandbox-161616",
-		"environment": "sandbox",
-		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
-		"server_url": "https://test.elb.us-west-2.amazonaws.com:6443",
-		"object": "cluster",
-		"active": false
+			"id": "sandbox-161616",
+			"environment": "sandbox",
+			"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+			"server_url": "https://test.elb.us-west-2.amazonaws.com:6443",
+			"object": "cluster",
+			"active": false
 		}]`)
 		srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 			_, err := rw.Write(testResponse)
