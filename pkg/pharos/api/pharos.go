@@ -13,7 +13,7 @@ import (
 // a certain subset of clusters.
 func (c *Client) ListClusters(query map[string]string) ([]model.Cluster, error) {
 	var clusters []model.Cluster
-	err := c.send(http.MethodGet, "clusters", nil, &clusters, query)
+	err := c.send(http.MethodGet, "clusters", query, nil, &clusters)
 	if err != nil {
 		return clusters, errors.Wrap(err, "failed to list clusters")
 	}
@@ -25,7 +25,7 @@ func (c *Client) ListClusters(query map[string]string) ([]model.Cluster, error) 
 // and returns a Cluster.
 func (c *Client) GetCluster(clusterID string) (model.Cluster, error) {
 	var cluster model.Cluster
-	err := c.send(http.MethodGet, fmt.Sprintf("clusters/%s", clusterID), nil, &cluster, nil)
+	err := c.send(http.MethodGet, fmt.Sprintf("clusters/%s", clusterID), nil, nil, &cluster)
 	if err != nil {
 		return cluster, errors.Wrap(err, "failed to get cluster")
 	}

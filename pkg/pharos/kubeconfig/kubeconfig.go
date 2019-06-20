@@ -56,8 +56,12 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 		clusters, err := client.ListClusters(q)
 		if err != nil {
 			return errors.Wrap(err, "unable to list clusters for specified environment")
-		} else if len(clusters) != 1 {
-			return fmt.Errorf("multiple or no active cluster for environment %s found", id)
+		}
+		switch {
+		case len(clusters) < 1:
+			return fmt.Errorf("no active cluster found for environment %s", id)
+		case len(clusters) > 1:
+			return fmt.Errorf("multiple clusters found for environment %s", id)
 		}
 
 		cluster = clusters[0]
@@ -97,7 +101,11 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 
 	// Print kubeconfig to terminal instead of saving to file during a dry run.
 	if dryRun {
-		fmt.Printf("%s\n", stringConfig(*kubeConfig))
+		yaml, err := clientcmd.Write(*kubeConfig)
+		if err != nil {
+			return errors.Wrap(err, "unable to write kubeconfig file")
+		}
+		fmt.Println(string(yaml))
 		return nil
 	}
 
@@ -139,15 +147,6 @@ func configFromFile(fileName string) (*clientcmdapi.Config, error) {
 		return nil, err
 	}
 	return kubeConfig, nil
-}
-
-// stringConfig converts a kubeconfig struct to printable string or error message.
-func stringConfig(kubeConfig clientcmdapi.Config) string {
-	yaml, err := clientcmd.Write(kubeConfig)
-	if err != nil {
-		return (errors.Wrap(err, "unable to write kubeconfig file")).Error()
-	}
-	return string(yaml)
 }
 
 // newContext returns a pointer to a new kubeconfig context with specified cluster and user.

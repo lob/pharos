@@ -43,7 +43,7 @@ func ClientFromConfig(configFile string) (*Client, error) {
 
 // send sends a http.Request for the specified method and path, with the given body encoded as JSON.
 // It then marshalls the returned response into the given response interface.
-func (c *Client) send(method string, path string, body interface{}, response interface{}, query map[string]string) error {
+func (c *Client) send(method string, path string, query map[string]string, body interface{}, response interface{}) error {
 	buf := &bytes.Buffer{}
 	if body != nil {
 		if err := json.NewEncoder(buf).Encode(body); err != nil {

@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/lob/pharos/pkg/pharos/api"
@@ -52,35 +51,44 @@ func TestCurrentCluster(t *testing.T) {
 func TestGetCluster(t *testing.T) {
 	// Set up dummy server for testing.
 	var getResponse = []byte(`{
-		"id": "sandbox-222222",
-		"environment": "sandbox",
+		"id":                     "sandbox-222222",
+		"environment":            "sandbox",
 		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
-		"server_url": "https://test.elb.us-west-2.amazonaws.com:6443",
-		"object": "cluster",
-		"active": false
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 false
 		}`)
 	var listResponse = []byte(`[{
-			"id": "sandbox-333333",
-			"environment": "sandbox",
-			"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
-			"server_url": "https://test.elb.us-west-2.amazonaws.com:6443",
-			"object": "cluster",
-			"active": true
-		}]`)
+		"id":                     "sandbox-333333",
+		"environment":            "sandbox",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	}]`)
+	var listResponse0 = []byte(`[]`)
+	var listResponse2 = []byte(`[{},{}]`)
 
 	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		if strings.Contains(r.URL.Path, "/clusters/sandbox-222222") {
+		switch r.URL.String() {
+		case "/clusters/sandbox-222222":
 			_, err := rw.Write(getResponse)
 			require.NoError(t, err)
-		} else if strings.Contains(r.URL.String(), "/clusters?active=true&environment=sandbox") {
+		case "/clusters?active=true&environment=sandbox":
 			_, err := rw.Write(listResponse)
+			require.NoError(t, err)
+		case "/clusters?active=true&environment=test0clusters":
+			_, err := rw.Write(listResponse0)
+			require.NoError(t, err)
+		case "/clusters?active=true&environment=test2clusters":
+			_, err := rw.Write(listResponse2)
 			require.NoError(t, err)
 		}
 	}))
 	defer srv.Close()
 
 	// Set BaseURL in config to be the url of the dummy server.
-	client := api.NewClient(&(configpkg.Config{BaseURL: srv.URL}))
+	client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
 
 	t.Run("successfully merges new kubeconfig file from cluster", func(tt *testing.T) {
 		// Create temporary test config file and defer cleanup.
@@ -184,6 +192,16 @@ func TestGetCluster(t *testing.T) {
 		err = GetCluster("sandbox-707070", config, false, client)
 		assert.Error(tt, err)
 		assert.Contains(tt, err.Error(), "failed to get cluster")
+
+		// Received zero clusters from list cluster.
+		err = GetCluster("test0clusters", config, true, client)
+		assert.Error(tt, err)
+		assert.Contains(tt, err.Error(), "no active cluster found for environment")
+
+		// Received too many clusters from list cluster.
+		err = GetCluster("test2clusters", config, true, client)
+		assert.Error(tt, err)
+		assert.Contains(tt, err.Error(), "multiple clusters found for environment")
 	})
 }
 

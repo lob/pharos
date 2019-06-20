@@ -44,7 +44,7 @@ func TestClient(t *testing.T) {
 		// TODO: Test making a GET request to the pharos-api-server when that's been set up.
 		// c := NewClient(Config{BaseURL: "http://localhost:7654"})
 
-		err := c.send(http.MethodGet, "", nil, &cluster, nil)
+		err := c.send(http.MethodGet, "", nil, nil, &cluster)
 		assert.NoError(tt, err)
 		assert.Equal(tt, "production-6906ce", cluster.ID)
 	})
@@ -53,7 +53,7 @@ func TestClient(t *testing.T) {
 		c := NewClient(&config.Config{BaseURL: "bad url"})
 		cluster := model.Cluster{}
 
-		err := c.send("", "", nil, &cluster, nil)
+		err := c.send("", "", nil, nil, &cluster)
 		assert.Error(tt, err)
 		assert.Contains(tt, err.Error(), "unsupported protocol")
 	})

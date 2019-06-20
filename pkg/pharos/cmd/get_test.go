@@ -32,7 +32,7 @@ func TestRunGet(t *testing.T) {
 		defer srv.Close()
 
 		// Set BaseURL in config to be the url of the dummy server.
-		client := api.NewClient(&(configpkg.Config{BaseURL: srv.URL}))
+		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
 
 		// Create temporary test config file and defer cleanup.
 		configFile := test.CopyTestFile(tt, "../testdata", "get", config)
@@ -64,7 +64,7 @@ func TestRunGet(t *testing.T) {
 		defer srv.Close()
 
 		// Set BaseURL in config to be the url of the dummy server.
-		client := api.NewClient(&(configpkg.Config{BaseURL: srv.URL}))
+		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
 
 		// Attempt to merge new cluster into configFile but this should fail because no cluster has been returned.
 		err := runGet("sandbox", config, false, client)
