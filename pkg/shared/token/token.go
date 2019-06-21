@@ -1,5 +1,5 @@
-// Package token is heavily inspired in aws-iam-authenticator's token package.
-// The package was modified to better work with pharo's authentication scheme
+// Package token is heavily inspired by aws-iam-authenticator's token package.
+// The package was modified to better work with pharos authentication scheme
 // https://github.com/kubernetes-sigs/aws-iam-authenticator/blob/1097f929eb323964ccc2f1af3f26f493e2756f7d/pkg/token/token.go
 package token
 
@@ -106,7 +106,7 @@ type tokenVerifier struct {
 	client *http.Client
 }
 
-// NewVerifier creates a Verifier that is able to verify the pharos tokens
+// NewVerifier creates a Verifier that is able to verify the pharos tokens.
 func NewVerifier() Verifier {
 	c := &http.Client{
 		Timeout: 10 * time.Second,

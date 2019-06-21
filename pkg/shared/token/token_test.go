@@ -30,7 +30,6 @@ type mockClient struct {
 }
 
 func (m mockClient) GetCallerIdentityRequest(input *sts.GetCallerIdentityInput) (*request.Request, *sts.GetCallerIdentityOutput) {
-
 	return &request.Request{
 		HTTPRequest: &http.Request{
 			URL: &url.URL{
@@ -204,7 +203,7 @@ func TestVerifyInvalidCanonicalARNError(t *testing.T) {
 }
 
 func TestVerifyInvalidUserIDError(t *testing.T) {
-	_, err := newVerifier(200, jsonResponse("arn:aws:iam::123456789012:user/Alice", "123456789012", "not:vailid:userid"), nil).Verify(validToken)
+	_, err := newVerifier(200, jsonResponse("arn:aws:iam::123456789012:user/Alice", "123456789012", "not:valid:userid"), nil).Verify(validToken)
 	errorContains(t, err, "malformed UserID")
 	assert.Error(t, err)
 }
