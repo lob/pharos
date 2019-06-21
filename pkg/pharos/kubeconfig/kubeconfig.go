@@ -3,6 +3,7 @@ package kubeconfig
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/lob/pharos/pkg/pharos/api"
@@ -46,7 +47,11 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 	// given an environment name instead of an actual cluster id and we need to
 	// fetch the cluster id of the currently active cluster.
 	var cluster model.Cluster
-	if !strings.Contains(id, "-") {
+	match, err := regexp.MatchString("-\\d{6}", id)
+	if err != nil {
+		return errors.Wrap(err, "unable to match cluster ID with regex")
+	}
+	if !match {
 		// Create query to find active cluster of given environment.
 		q := map[string]string{
 			"active":      "true",
@@ -173,7 +178,8 @@ func newUser(id string) *clientcmdapi.AuthInfo {
 	// Add env variables to exec config.
 	var env clientcmdapi.ExecEnvVar
 	env.Name = "AWS_PROFILE"
-	env.Value = strings.Split(id, "-")[0]
+	s := strings.Split(id, "-")
+	env.Value = strings.Join(s[:len(s)-1], "-")
 	exec.Env = []clientcmdapi.ExecEnvVar{env}
 
 	return user

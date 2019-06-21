@@ -68,6 +68,14 @@ func TestGetCluster(t *testing.T) {
 	}]`)
 	var listResponse0 = []byte(`[]`)
 	var listResponse2 = []byte(`[{},{}]`)
+	var listResponse3 = []byte(`[{
+		"id":                     "platform-postmasters-777777",
+		"environment":            "platform-postmasters",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	}]`)
 
 	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		switch r.URL.String() {
@@ -82,6 +90,9 @@ func TestGetCluster(t *testing.T) {
 			require.NoError(t, err)
 		case "/clusters?active=true&environment=test2clusters":
 			_, err := rw.Write(listResponse2)
+			require.NoError(t, err)
+		case "/clusters?active=true&environment=platform-postmasters":
+			_, err := rw.Write(listResponse3)
 			require.NoError(t, err)
 		}
 	}))
@@ -110,23 +121,23 @@ func TestGetCluster(t *testing.T) {
 		// Check that context for sandbox has been updated.
 		context, ok := kubeConfig.Contexts["sandbox"]
 		assert.True(tt, ok)
-		assert.Equal(tt, context.Cluster, "sandbox-333333")
-		assert.Equal(tt, context.AuthInfo, "engineering-sandbox-333333")
+		assert.Equal(tt, "sandbox-333333", context.Cluster)
+		assert.Equal(tt, "engineering-sandbox-333333", context.AuthInfo)
 
 		// Check that context for the new cluster exists in the file.
 		context, ok = kubeConfig.Contexts["sandbox-333333"]
 		assert.True(tt, ok)
-		assert.Equal(tt, context.Cluster, "sandbox-333333")
-		assert.Equal(tt, context.AuthInfo, "engineering-sandbox-333333")
+		assert.Equal(tt, "sandbox-333333", context.Cluster)
+		assert.Equal(tt, "engineering-sandbox-333333", context.AuthInfo)
 
 		// Check that new user was created for new cluster.
 		user, ok := kubeConfig.AuthInfos["engineering-sandbox-333333"]
 		assert.True(tt, ok)
-		assert.Equal(tt, user.Exec.Command, "aws-iam-authenticator")
-		assert.Equal(tt, user.Exec.Args, []string{"token", "-i", "sandbox-333333"})
+		assert.Equal(tt, "aws-iam-authenticator", user.Exec.Command)
+		assert.Equal(tt, []string{"token", "-i", "sandbox-333333"}, user.Exec.Args)
 
 		// Check that current context has not been modified.
-		assert.Equal(tt, oldKubeConfig.CurrentContext, kubeConfig.CurrentContext)
+		assert.Equal(tt, kubeConfig.CurrentContext, oldKubeConfig.CurrentContext)
 	})
 
 	t.Run("successfully creates new kubeconfig file when no previous kubeconfig file exists", func(tt *testing.T) {
@@ -202,6 +213,35 @@ func TestGetCluster(t *testing.T) {
 		err = GetCluster("test2clusters", config, true, client)
 		assert.Error(tt, err)
 		assert.Contains(tt, err.Error(), "multiple clusters found for environment")
+	})
+
+	t.Run("successfully merges new kubeconfig file from cluster using environment with more than one dash into an empty file", func(tt *testing.T) {
+		// Create temporary test config file and defer cleanup.
+		configFile := test.CopyTestFile(tt, "../testdata", "get", emptyConfig)
+		defer os.Remove(configFile)
+
+		// Merge cluster information from active cluster for sandbox into configFile.
+		err := GetCluster("platform-postmasters", configFile, false, client)
+		assert.NoError(tt, err)
+
+		// Load kubeconfig file for testing.
+		kubeConfig, err := configFromFile(configFile)
+		assert.NoError(tt, err)
+
+		// Check that context has been updated.
+		context, ok := kubeConfig.Contexts["platform-postmasters"]
+		assert.True(tt, ok)
+		assert.Equal(tt, "platform-postmasters-777777", context.Cluster)
+		assert.Equal(tt, "engineering-platform-postmasters-777777", context.AuthInfo)
+
+		// Check that new user was created for new cluster.
+		user, ok := kubeConfig.AuthInfos["engineering-platform-postmasters-777777"]
+		assert.True(tt, ok)
+		assert.Equal(tt, []string{"token", "-i", "platform-postmasters-777777"}, user.Exec.Args)
+		assert.Equal(tt, clientcmdapi.ExecEnvVar{Name: "AWS_PROFILE", Value: "platform-postmasters"}, user.Exec.Env[0])
+
+		// Check that current context has been set.
+		assert.Equal(tt, "platform-postmasters", kubeConfig.CurrentContext)
 	})
 }
 
