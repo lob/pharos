@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strings"
 
 	"github.com/lob/pharos/pkg/pharos/api"
 	"github.com/lob/pharos/pkg/util/model"
@@ -43,11 +42,13 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 		kubeConfig = clientcmdapi.NewConfig()
 	}
 
-	// Check whether given id has a suffix. If not, this means that we were
-	// given an environment name instead of an actual cluster id and we need to
-	// fetch the cluster id of the currently active cluster.
+	// Check whether given id has a suffix composed of a dash followed by six numbers.
+	// (Example: sandbox-111111 vs sandbox)
+	// If the id has no suffix, this means that we were given an environment name instead
+	// of a cluster id and we need to fetch the id of the currently active cluster from
+	// the Pharos API.
 	var cluster model.Cluster
-	match, err := regexp.MatchString("-\\d{6}", id)
+	match, err := regexp.MatchString(`-\d{6}`, id)
 	if err != nil {
 		return errors.Wrap(err, "unable to match cluster ID with regex")
 	}
@@ -66,7 +67,7 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 		case len(clusters) < 1:
 			return fmt.Errorf("no active cluster found for environment %s", id)
 		case len(clusters) > 1:
-			return fmt.Errorf("multiple clusters found for environment %s", id)
+			return fmt.Errorf("%d clusters found for environment %s", len(clusters), id)
 		}
 
 		cluster = clusters[0]
@@ -91,11 +92,11 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 	// Update user, context, and cluster information associated with the cluster
 	// in the kubeconfig.
 	kubeConfig.Clusters[clusterID] = newCluster(cluster)
-	kubeConfig.AuthInfos[username] = newUser(clusterID)
+	kubeConfig.AuthInfos[username] = newUser(clusterID, cluster.Environment)
 	context := newContext(clusterID, username)
 	kubeConfig.Contexts[clusterID] = context
 
-	// If necessary, update existing context for the specified environment.
+	// Update existing context for the specified environment.
 	kubeConfig.Contexts[id] = context
 
 	// Check for errors in newly created config.
@@ -114,7 +115,13 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 		return nil
 	}
 
-	return clientcmd.WriteToFile(*kubeConfig, kubeConfigFile)
+	// Write kubeconfig to file.
+	err = clientcmd.WriteToFile(*kubeConfig, kubeConfigFile)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%s CLUSTER MERGED INTO %s.\n", id, kubeConfigFile)
+	return nil
 }
 
 // SwitchCluster switches current context to given cluster or context name.
@@ -165,7 +172,7 @@ func newContext(id string, user string) *clientcmdapi.Context {
 
 // newUser returns a pointer to a new kubeconfig user for a specified cluster.
 // The id given should always be of form "[environment]-[suffix]".
-func newUser(id string) *clientcmdapi.AuthInfo {
+func newUser(id string, environment string) *clientcmdapi.AuthInfo {
 	user := clientcmdapi.NewAuthInfo()
 
 	// Add exec config.
@@ -178,8 +185,7 @@ func newUser(id string) *clientcmdapi.AuthInfo {
 	// Add env variables to exec config.
 	var env clientcmdapi.ExecEnvVar
 	env.Name = "AWS_PROFILE"
-	s := strings.Split(id, "-")
-	env.Value = strings.Join(s[:len(s)-1], "-")
+	env.Value = environment
 	exec.Env = []clientcmdapi.ExecEnvVar{env}
 
 	return user

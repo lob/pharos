@@ -34,9 +34,6 @@ func runGet(cluster string, kubeConfigFile string, dryRun bool, client *api.Clie
 	if err != nil {
 		return errors.Wrap(err, "failed to get cluster information")
 	}
-	if !dryRun {
-		fmt.Printf("%s CLUSTER MERGED INTO %s.\n", cluster, kubeConfigFile)
-	}
 	return nil
 }
 

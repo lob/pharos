@@ -17,7 +17,7 @@ import (
 func TestRunGet(t *testing.T) {
 	t.Run("successfully merges information from a cluster into a kubeconfig file", func(tt *testing.T) {
 		// Set up dummy server for testing.
-		var testResponse = []byte(`[{
+		testResponse := []byte(`[{
 			"id": "sandbox-161616",
 			"environment": "sandbox",
 			"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",

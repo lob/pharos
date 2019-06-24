@@ -31,5 +31,5 @@ func runSwitch(kubeConfigFile string, context string) error {
 }
 
 func init() {
-	SwitchCmd.Flags().StringVarP(&file, "file", "f", fmt.Sprintf("%s%s", os.Getenv("HOME"), "/.kube/config"), "specify designated kubeconfig file")
+	SwitchCmd.Flags().StringVarP(&file, "file", "f", fmt.Sprintf("%s/.kube/config", os.Getenv("HOME")), "specify designated kubeconfig file")
 }

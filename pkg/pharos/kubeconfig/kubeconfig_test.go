@@ -50,7 +50,7 @@ func TestCurrentCluster(t *testing.T) {
 
 func TestGetCluster(t *testing.T) {
 	// Set up dummy server for testing.
-	var getResponse = []byte(`{
+	getResponse := []byte(`{
 		"id":                     "sandbox-222222",
 		"environment":            "sandbox",
 		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
@@ -58,7 +58,7 @@ func TestGetCluster(t *testing.T) {
 		"object":                 "cluster",
 		"active":                 false
 	}`)
-	var listResponse = []byte(`[{
+	listResponse := []byte(`[{
 		"id":                     "sandbox-333333",
 		"environment":            "sandbox",
 		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
@@ -66,9 +66,9 @@ func TestGetCluster(t *testing.T) {
 		"object":                 "cluster",
 		"active":                 true
 	}]`)
-	var listResponse0 = []byte(`[]`)
-	var listResponse2 = []byte(`[{},{}]`)
-	var listResponse3 = []byte(`[{
+	listResponse0 := []byte(`[]`)
+	listResponse2 := []byte(`[{},{}]`)
+	listResponse3 := []byte(`[{
 		"id":                     "platform-postmasters-777777",
 		"environment":            "platform-postmasters",
 		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
@@ -78,23 +78,21 @@ func TestGetCluster(t *testing.T) {
 	}]`)
 
 	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		var response []byte
 		switch r.URL.String() {
 		case "/clusters/sandbox-222222":
-			_, err := rw.Write(getResponse)
-			require.NoError(t, err)
+			response = getResponse
 		case "/clusters?active=true&environment=sandbox":
-			_, err := rw.Write(listResponse)
-			require.NoError(t, err)
+			response = listResponse
 		case "/clusters?active=true&environment=test0clusters":
-			_, err := rw.Write(listResponse0)
-			require.NoError(t, err)
+			response = listResponse0
 		case "/clusters?active=true&environment=test2clusters":
-			_, err := rw.Write(listResponse2)
-			require.NoError(t, err)
+			response = listResponse2
 		case "/clusters?active=true&environment=platform-postmasters":
-			_, err := rw.Write(listResponse3)
-			require.NoError(t, err)
+			response = listResponse3
 		}
+		_, err := rw.Write(response)
+		require.NoError(t, err)
 	}))
 	defer srv.Close()
 
@@ -212,7 +210,7 @@ func TestGetCluster(t *testing.T) {
 		// Received too many clusters from list cluster.
 		err = GetCluster("test2clusters", config, true, client)
 		assert.Error(tt, err)
-		assert.Contains(tt, err.Error(), "multiple clusters found for environment")
+		assert.Contains(tt, err.Error(), "2 clusters found for environment")
 	})
 
 	t.Run("successfully merges new kubeconfig file from cluster using environment with more than one dash into an empty file", func(tt *testing.T) {
