@@ -87,7 +87,7 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 
 	// Set username associated with new cluster.
 	clusterID := cluster.ID
-	username := fmt.Sprintf("engineering-%s", clusterID)
+	username := fmt.Sprintf("iam-%s", clusterID)
 
 	// Update user, context, and cluster information associated with the cluster
 	// in the kubeconfig.

@@ -31,7 +31,7 @@ func Execute() error {
 
 func init() {
 	rootCmd.Flags().BoolP("version", "v", false, "print pharos version number")
-	rootCmd.PersistentFlags().StringVarP(&pharosConfig, "config", "c", fmt.Sprintf("%s%s", os.Getenv("HOME"), "/.kube/pharos/config"), "pharos config file")
+	rootCmd.PersistentFlags().StringVarP(&pharosConfig, "config", "c", fmt.Sprintf("%s/.kube/pharos/config", os.Getenv("HOME")), "pharos config file")
 
 	// Prevent usage message from being printed out upon command error.
 	rootCmd.SilenceUsage = true

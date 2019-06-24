@@ -120,16 +120,16 @@ func TestGetCluster(t *testing.T) {
 		context, ok := kubeConfig.Contexts["sandbox"]
 		assert.True(tt, ok)
 		assert.Equal(tt, "sandbox-333333", context.Cluster)
-		assert.Equal(tt, "engineering-sandbox-333333", context.AuthInfo)
+		assert.Equal(tt, "iam-sandbox-333333", context.AuthInfo)
 
 		// Check that context for the new cluster exists in the file.
 		context, ok = kubeConfig.Contexts["sandbox-333333"]
 		assert.True(tt, ok)
 		assert.Equal(tt, "sandbox-333333", context.Cluster)
-		assert.Equal(tt, "engineering-sandbox-333333", context.AuthInfo)
+		assert.Equal(tt, "iam-sandbox-333333", context.AuthInfo)
 
 		// Check that new user was created for new cluster.
-		user, ok := kubeConfig.AuthInfos["engineering-sandbox-333333"]
+		user, ok := kubeConfig.AuthInfos["iam-sandbox-333333"]
 		assert.True(tt, ok)
 		assert.Equal(tt, "aws-iam-authenticator", user.Exec.Command)
 		assert.Equal(tt, []string{"token", "-i", "sandbox-333333"}, user.Exec.Args)
@@ -230,10 +230,10 @@ func TestGetCluster(t *testing.T) {
 		context, ok := kubeConfig.Contexts["platform-postmasters"]
 		assert.True(tt, ok)
 		assert.Equal(tt, "platform-postmasters-777777", context.Cluster)
-		assert.Equal(tt, "engineering-platform-postmasters-777777", context.AuthInfo)
+		assert.Equal(tt, "iam-platform-postmasters-777777", context.AuthInfo)
 
 		// Check that new user was created for new cluster.
-		user, ok := kubeConfig.AuthInfos["engineering-platform-postmasters-777777"]
+		user, ok := kubeConfig.AuthInfos["iam-platform-postmasters-777777"]
 		assert.True(tt, ok)
 		assert.Equal(tt, []string{"token", "-i", "platform-postmasters-777777"}, user.Exec.Args)
 		assert.Equal(tt, clientcmdapi.ExecEnvVar{Name: "AWS_PROFILE", Value: "platform-postmasters"}, user.Exec.Env[0])
