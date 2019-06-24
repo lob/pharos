@@ -1,10 +1,12 @@
-package kubeconfig
+package cli
 
 import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 
+	"github.com/fatih/color"
 	"github.com/lob/pharos/pkg/pharos/api"
 	"github.com/lob/pharos/pkg/util/model"
 	"github.com/pkg/errors"
@@ -29,7 +31,7 @@ func CurrentCluster(kubeConfigFile string) (string, error) {
 }
 
 // GetCluster gets information from a new cluster
-// and merges it into an existing kubeconfig file
+// and merges it into an existing kubeconfig file.
 func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Client) error {
 	// Check whether given kubeconfig file already exists. If it does not, create a new kubeconfig
 	// file in the specified file location. Return an error only if file is malformed, but not
@@ -120,8 +122,33 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%s CLUSTER MERGED INTO %s.\n", id, kubeConfigFile)
+	fmt.Printf("%s %s MERGED INTO %s\n", color.GreenString("SUCCESS:"), id, kubeConfigFile)
 	return nil
+}
+
+// ListClusters retrieves all clusters and returns a formatted string
+// of all clusters. If given an environment, ListClusters will only retrieve
+// the clusters for that environment.
+func ListClusters(env string, client *api.Client) (string, error) {
+	var query map[string]string
+	if env != "" {
+		query = map[string]string{
+			"active":      "true",
+			"environment": env,
+		}
+	}
+
+	c, err := client.ListClusters(query)
+	if err != nil {
+		return "", errors.Wrap(err, "unable to list clusters for specified environment")
+	}
+
+	clusters := color.CyanString(fmt.Sprintf("%-30s%-24s%-10s%s", "CLUSTER_ID", "ENVIRONMENT", "ACTIVE", "SERVER"))
+	for _, cluster := range c {
+		clusters = fmt.Sprintf("%s\n%-30s%-24s%-10s%-s", clusters, cluster.ID, cluster.Environment, strconv.FormatBool(cluster.Active), cluster.ServerURL)
+	}
+
+	return clusters, nil
 }
 
 // SwitchCluster switches current context to given cluster or context name.
@@ -147,55 +174,4 @@ func SwitchCluster(kubeConfigFile string, context string) error {
 	}
 
 	return clientcmd.WriteToFile(*kubeConfig, kubeConfigFile)
-}
-
-// configFromFile returns a struct containing kubeconfig information from a file.
-// Does not differentiate between errors resulting from a missing file and errors
-// from reading from a malformed config.
-// Function source: https://github.com/kubernetes/client-go/blob/88ff0afc48bbf242f66f2f0c8d5c26b253e6561c/tools/clientcmd/config.go#L471
-func configFromFile(fileName string) (*clientcmdapi.Config, error) {
-	kubeConfig, err := clientcmd.LoadFromFile(fileName)
-	if err != nil {
-		return nil, err
-	}
-	return kubeConfig, nil
-}
-
-// newContext returns a pointer to a new kubeconfig context with specified cluster and user.
-func newContext(id string, user string) *clientcmdapi.Context {
-	context := clientcmdapi.NewContext()
-	context.Cluster = id
-	context.AuthInfo = user
-
-	return context
-}
-
-// newUser returns a pointer to a new kubeconfig user for a specified cluster.
-// The id given should always be of form "[environment]-[suffix]".
-func newUser(id string, environment string) *clientcmdapi.AuthInfo {
-	user := clientcmdapi.NewAuthInfo()
-
-	// Add exec config.
-	var exec clientcmdapi.ExecConfig
-	exec.Command = "aws-iam-authenticator"
-	exec.APIVersion = "client.authentication.k8s.io/v1alpha1"
-	exec.Args = []string{"token", "-i", id}
-	user.Exec = &exec
-
-	// Add env variables to exec config.
-	var env clientcmdapi.ExecEnvVar
-	env.Name = "AWS_PROFILE"
-	env.Value = environment
-	exec.Env = []clientcmdapi.ExecEnvVar{env}
-
-	return user
-}
-
-// newCluster returns a pointer to a new clientcmdapi.Cluster containing
-// information from a cluster.
-func newCluster(c model.Cluster) *clientcmdapi.Cluster {
-	cluster := clientcmdapi.NewCluster()
-	cluster.Server = c.ServerURL
-	cluster.CertificateAuthorityData = []byte(c.ClusterAuthorityData)
-	return cluster
 }

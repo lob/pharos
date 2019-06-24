@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/lob/pharos/pkg/pharos/kubeconfig"
+	"github.com/fatih/color"
+	"github.com/lob/pharos/pkg/pharos/cli"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -21,12 +22,12 @@ var SwitchCmd = &cobra.Command{
 func runSwitch(kubeConfigFile string, context string) error {
 	fmt.Printf("SWITCHING TO CLUSTER %s...\n", context)
 
-	err := kubeconfig.SwitchCluster(kubeConfigFile, context)
+	err := cli.SwitchCluster(kubeConfigFile, context)
 	if err != nil {
 		return errors.Wrap(err, "cluster switch unsuccessful")
 	}
 
-	fmt.Println("CLUSTER SWITCH COMPLETE.")
+	fmt.Printf("%s CLUSTER SWITCH COMPLETE\n", color.GreenString("SUCCESS:"))
 	return nil
 }
 

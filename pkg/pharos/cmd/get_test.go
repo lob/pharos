@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/lob/pharos/pkg/pharos/api"
+	"github.com/lob/pharos/pkg/pharos/cli"
 	configpkg "github.com/lob/pharos/pkg/pharos/config"
-	"github.com/lob/pharos/pkg/pharos/kubeconfig"
 	"github.com/lob/pharos/pkg/util/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -43,14 +43,14 @@ func TestRunGet(t *testing.T) {
 		assert.NoError(tt, err)
 
 		// Check that current context has not been modified.
-		clusterName, err := kubeconfig.CurrentCluster(configFile)
+		clusterName, err := cli.CurrentCluster(configFile)
 		assert.NoError(tt, err)
 		assert.Equal(tt, "sandbox", clusterName)
 
 		// Check that a new cluster was added by switching to it and checking whether the switch was successful.
 		err = runSwitch(configFile, "sandbox-161616")
 		assert.NoError(tt, err)
-		clusterName, err = kubeconfig.CurrentCluster(configFile)
+		clusterName, err = cli.CurrentCluster(configFile)
 		assert.NoError(tt, err)
 		assert.Equal(tt, "sandbox-161616", clusterName)
 	})

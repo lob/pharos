@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/lob/pharos/pkg/pharos/api"
-	"github.com/lob/pharos/pkg/pharos/kubeconfig"
+	"github.com/lob/pharos/pkg/pharos/cli"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -30,7 +30,7 @@ var GetCmd = &cobra.Command{
 }
 
 func runGet(cluster string, kubeConfigFile string, dryRun bool, client *api.Client) error {
-	err := kubeconfig.GetCluster(cluster, kubeConfigFile, dryRun, client)
+	err := cli.GetCluster(cluster, kubeConfigFile, dryRun, client)
 	if err != nil {
 		return errors.Wrap(err, "failed to get cluster information")
 	}

@@ -56,6 +56,14 @@
   version = "v1.1.1"
 
 [[projects]]
+  digest = "1:938a2672d6ebbb7f7bc63eee3e4b9464c16ffcf77ec8913d3edbf32b4e3984dd"
+  name = "github.com/fatih/color"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "570b54cabe6b8eb0bc2dfce68d964677d63b5260"
+  version = "v1.5.0"
+
+[[projects]]
   digest = "1:d18f6f088d7d8365df47f49dfa24b6ff6701a941118ffda30c589d1bd954074b"
   name = "github.com/getsentry/raven-go"
   packages = ["."]
@@ -595,6 +603,7 @@
     "github.com/aws/aws-sdk-go/aws/request",
     "github.com/aws/aws-sdk-go/service/sts",
     "github.com/aws/aws-sdk-go/service/sts/stsiface",
+    "github.com/fatih/color",
     "github.com/go-pg/pg",
     "github.com/go-pg/pg/orm",
     "github.com/labstack/echo",
