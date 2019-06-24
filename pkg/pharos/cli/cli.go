@@ -194,3 +194,70 @@ func SwitchCluster(kubeConfigFile string, context string) error {
 
 	return clientcmd.WriteToFile(*kubeConfig, kubeConfigFile)
 }
+
+// SyncClusters gets information from all current existing clusters
+// and merges it into a kubeconfig file.
+func SyncClusters(kubeConfigFile string, dryRun bool, overwrite bool, client *api.Client) error {
+	// Check whether given kubeconfig file already exists. If it does not, create a new kubeconfig
+	// file in the specified file location. Return an error only if file is malformed, but not
+	// if it is empty or missing. If overwrite is set to true, start with new kubeconfig file
+	// regardless.
+	kubeConfig, err := configFromFile(kubeConfigFile)
+	if err != nil && !os.IsNotExist(err) {
+		return errors.Wrap(err, "unable to load kubeconfig file")
+	}
+	if kubeConfig == nil || overwrite {
+		kubeConfig = clientcmdapi.NewConfig()
+	}
+
+	clusters, err := client.ListClusters(nil)
+	if err != nil {
+		return err
+	}
+
+	// Add cluster, context, and user for each cluster. There should never be
+	// more than one cluster marked active for each environment, but if there is,
+	// return an error.
+	active := map[string]bool{}
+	for _, cluster := range clusters {
+		clusterID := cluster.ID
+		env := cluster.Environment
+		username := fmt.Sprintf("iam-%s", clusterID)
+		kubeConfig.Clusters[clusterID] = newCluster(cluster)
+		kubeConfig.AuthInfos[username] = newUser(clusterID, env)
+		context := newContext(clusterID, username)
+		kubeConfig.Contexts[clusterID] = context
+
+		if cluster.Active {
+			_, ok := active[env]
+			if ok {
+				return fmt.Errorf("more than one active cluster for environment %s found", env)
+			}
+			kubeConfig.Contexts[env] = context
+			active[env] = true
+		}
+	}
+
+	// Check for errors in newly created config.
+	err = clientcmd.Validate(*kubeConfig)
+	if err != nil {
+		return errors.Wrap(err, "unable to create valid kubeconfig")
+	}
+
+	// Print kubeconfig to terminal instead of saving to file during a dry run.
+	if dryRun {
+		yaml, err := clientcmd.Write(*kubeConfig)
+		if err != nil {
+			return errors.Wrap(err, "unable to write kubeconfig file")
+		}
+		fmt.Println(string(yaml))
+		return nil
+	}
+
+	err = clientcmd.WriteToFile(*kubeConfig, kubeConfigFile)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%s %d CLUSTERS SYNCED AND MERGED INTO %s\n", color.GreenString("SUCCESS:"), len(clusters), kubeConfigFile)
+	return nil
+}

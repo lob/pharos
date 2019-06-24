@@ -10,9 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Declare some variables to be used as flags.
-var dryRun bool
-
 // GetCmd implements a CLI command that allows users to get cluster information from a new cluster
 // and merge it into an existing kubeconfig file.
 var GetCmd = &cobra.Command{
