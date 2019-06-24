@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/lob/pharos/pkg/pharos/config"
@@ -26,9 +27,23 @@ func NewClient(config *config.Config) *Client {
 	return &Client{c, config}
 }
 
+// ClientFromConfig creates a new Client with its own http.Client
+// using the config file provided.
+func ClientFromConfig(configFile string) (*Client, error) {
+	c, err := config.New(configFile)
+	if err != nil {
+		return nil, err
+	}
+	err = c.Load()
+	if err != nil {
+		return nil, err
+	}
+	return NewClient(c), nil
+}
+
 // send sends a http.Request for the specified method and path, with the given body encoded as JSON.
 // It then marshalls the returned response into the given response interface.
-func (c *Client) send(method string, path string, body interface{}, response interface{}) error {
+func (c *Client) send(method string, path string, query map[string]string, body interface{}, response interface{}) error {
 	buf := &bytes.Buffer{}
 	if body != nil {
 		if err := json.NewEncoder(buf).Encode(body); err != nil {
@@ -42,6 +57,15 @@ func (c *Client) send(method string, path string, body interface{}, response int
 		return errors.Wrap(err, "unable to create http request")
 	}
 	req.Header.Set("Content-Type", "application/json")
+
+	// Add queries to request if there are any.
+	if query != nil {
+		q := url.Values{}
+		for key, value := range query {
+			q.Add(key, value)
+		}
+		req.URL.RawQuery = q.Encode()
+	}
 
 	// Send request.
 	resp, err := c.client.Do(req)
