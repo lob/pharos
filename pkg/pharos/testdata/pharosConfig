@@ -1,4 +1,4 @@
 {
-  "base_url": "pharos.lob-sandbox.com",
+  "base_url": "http://localhost:7654",
   "aws_profile": "sandbox"
 }

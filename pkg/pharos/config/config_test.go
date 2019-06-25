@@ -37,7 +37,7 @@ func TestLoad(t *testing.T) {
 		// Loads file successfully into struct.
 		err = c.Load()
 		assert.NoError(tt, err)
-		assert.Equal(tt, "pharos.lob-sandbox.com", c.BaseURL)
+		assert.Equal(tt, "http://localhost:7654", c.BaseURL)
 	})
 
 	t.Run("fails to load from nonexistent config", func(tt *testing.T) {

@@ -66,7 +66,7 @@ func TestClientFromConfig(t *testing.T) {
 		assert.NotNil(tt, c)
 
 		assert.Equal(tt, 10*time.Second, c.client.Timeout)
-		assert.Equal(tt, "pharos.lob-sandbox.com", c.config.BaseURL)
+		assert.Equal(tt, "http://localhost:7654", c.config.BaseURL)
 	})
 }
 
