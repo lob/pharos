@@ -7,12 +7,10 @@ import (
 
 // RegisterRoutes takes in an Echo router and registers routes onto it.
 func RegisterRoutes(e *echo.Echo, app application.App) {
-	g := e.Group("/clusters")
-
 	h := handler{app}
 
-	g.GET("", h.list)
-	g.GET("/:id", h.retrieve)
-	g.DELETE("/:id", h.delete)
-	g.POST("", h.create)
+	e.GET("/clusters", h.list)
+	e.GET("/clusters/:id", h.retrieve)
+	e.DELETE("/clusters/:id", h.delete)
+	e.POST("/clusters", h.create)
 }
