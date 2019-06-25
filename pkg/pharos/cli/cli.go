@@ -1,10 +1,12 @@
 package cli
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"regexp"
 	"strconv"
+	"text/tabwriter"
 
 	"github.com/fatih/color"
 	"github.com/lob/pharos/pkg/pharos/api"
@@ -143,12 +145,26 @@ func ListClusters(env string, client *api.Client) (string, error) {
 		return "", errors.Wrap(err, "unable to list clusters for specified environment")
 	}
 
-	clusters := color.CyanString(fmt.Sprintf("%-30s%-24s%-10s%s", "CLUSTER_ID", "ENVIRONMENT", "ACTIVE", "SERVER"))
-	for _, cluster := range c {
-		clusters = fmt.Sprintf("%s\n%-30s%-24s%-10s%-s", clusters, cluster.ID, cluster.Environment, strconv.FormatBool(cluster.Active), cluster.ServerURL)
+	// List cluster attributes in organized columns.
+	buf := new(bytes.Buffer)
+	w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', 0)
+	cyan := color.New(color.FgCyan)
+
+	// Add spaces to prevent ANSI reset codes from breaking the tabwriter formatting.
+	_, err = cyan.Fprint(w, "CLUSTER_ID\t     ENVIRONMENT\t     ACTIVE\t     SERVER")
+	if err != nil {
+		return "", err
 	}
 
-	return clusters, nil
+	for _, cluster := range c {
+		fmt.Fprintf(w, "\n%s\t%s\t%s\t%s", cluster.ID, cluster.Environment, strconv.FormatBool(cluster.Active), cluster.ServerURL)
+	}
+
+	if err := w.Flush(); err != nil {
+		return "", err
+	}
+
+	return buf.String(), nil
 }
 
 // SwitchCluster switches current context to given cluster or context name.
