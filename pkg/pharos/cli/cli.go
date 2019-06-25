@@ -131,18 +131,20 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 // ListClusters retrieves all clusters and returns a formatted string
 // of all clusters. If given an environment, ListClusters will only retrieve
 // the clusters for that environment.
-func ListClusters(env string, client *api.Client) (string, error) {
-	var query map[string]string
+func ListClusters(env string, active bool, client *api.Client) (string, error) {
+	query := make(map[string]string)
+	// If active is true, we'll only list active clusters, otherwise we'll list
+	// all clusters, including inactive ones.
+	if active {
+		query["active"] = "true"
+	}
 	if env != "" {
-		query = map[string]string{
-			"active":      "true",
-			"environment": env,
-		}
+		query["environment"] = env
 	}
 
 	c, err := client.ListClusters(query)
 	if err != nil {
-		return "", errors.Wrap(err, "unable to list clusters for specified environment")
+		return "", err
 	}
 
 	// List cluster attributes in organized columns.

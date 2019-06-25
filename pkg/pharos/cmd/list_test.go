@@ -38,7 +38,7 @@ func TestRunList(t *testing.T) {
 		// Set BaseURL in config to be the url of the dummy server.
 		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
 
-		err := runList("sandbox", client)
+		err := runList("sandbox", false, client)
 		assert.NoError(tt, err)
 	})
 
@@ -53,7 +53,7 @@ func TestRunList(t *testing.T) {
 		// Set BaseURL in config to be the url of the dummy server.
 		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
 
-		err := runList("", client)
+		err := runList("", false, client)
 		assert.Error(tt, err)
 	})
 }

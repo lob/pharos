@@ -23,12 +23,12 @@ var ListCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrap(err, "unable to create client from pharos config file")
 		}
-		return runList(environment, client)
+		return runList(environment, active, client)
 	},
 }
 
-func runList(env string, client *api.Client) error {
-	clusters, err := cli.ListClusters(environment, client)
+func runList(env string, active bool, client *api.Client) error {
+	clusters, err := cli.ListClusters(environment, active, client)
 	if err != nil {
 		return errors.Wrap(err, "failed to list clusters")
 	}
@@ -38,4 +38,5 @@ func runList(env string, client *api.Client) error {
 
 func init() {
 	ListCmd.Flags().StringVarP(&environment, "environment", "e", "", "specify environment to list clusters for")
+	ListCmd.Flags().BoolVarP(&active, "active", "a", true, "status of clusters to list")
 }

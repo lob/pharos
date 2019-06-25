@@ -282,14 +282,24 @@ func TestListClusters(t *testing.T) {
 		"object":                 "cluster",
 		"active":                 false
 	}]`)
+	listActiveStaging := []byte(`[{
+		"id":                     "staging-555555",
+		"environment":            "staging",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	}]`)
 
 	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		var response []byte
 		switch r.URL.String() {
 		case "/clusters":
 			response = listClusters
-		case "/clusters?active=true&environment=sandbox":
+		case "/clusters?environment=sandbox":
 			response = listSandbox
+		case "/clusters?active=true&environment=staging":
+			response = listActiveStaging
 		}
 		_, err := rw.Write(response)
 		require.NoError(t, err)
@@ -301,7 +311,7 @@ func TestListClusters(t *testing.T) {
 
 	t.Run("successfully lists all clusters", func(tt *testing.T) {
 		// Lists all non-deleted clusters.
-		clusters, err := ListClusters("", client)
+		clusters, err := ListClusters("", false, client)
 		assert.NoError(tt, err)
 		assert.Contains(tt, clusters, "sandbox-222222")
 		assert.Contains(tt, clusters, "sandbox-333333")
@@ -310,17 +320,24 @@ func TestListClusters(t *testing.T) {
 
 	t.Run("successfully lists all clusters for an environment", func(tt *testing.T) {
 		// List all clusters for a certain environment.
-		clusters, err := ListClusters("sandbox", client)
+		clusters, err := ListClusters("sandbox", false, client)
 		assert.NoError(tt, err)
 		assert.Contains(tt, clusters, "sandbox-222222")
 		assert.Contains(tt, clusters, "sandbox-333333")
 	})
 
+	t.Run("successfully lists all active clusters for an environment", func(tt *testing.T) {
+		// List all active clusters for a certain environment.
+		clusters, err := ListClusters("staging", true, client)
+		assert.NoError(tt, err)
+		assert.Contains(tt, clusters, "staging-555555")
+	})
+
 	t.Run("errors related to retrieving cluster information from the pharos API", func(tt *testing.T) {
 		// Failed to list cluster.
-		_, err := ListClusters("random", client)
+		_, err := ListClusters("random", true, client)
 		assert.Error(tt, err)
-		assert.Contains(tt, err.Error(), "unable to list clusters for specified environment")
+		assert.Contains(tt, err.Error(), "failed to list clusters")
 	})
 }
 
