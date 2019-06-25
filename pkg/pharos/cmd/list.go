@@ -32,7 +32,7 @@ func runList(env string, client *api.Client) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to list clusters")
 	}
-	fmt.Println(clusters)
+	fmt.Print(clusters)
 	return nil
 }
 

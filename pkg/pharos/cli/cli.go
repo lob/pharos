@@ -150,7 +150,7 @@ func ListClusters(env string, client *api.Client) (string, error) {
 	w := tabwriter.NewWriter(buf, 0, 0, 3, ' ', 0)
 	cyan := color.New(color.FgCyan)
 
-	// Add spaces to prevent ANSI reset codes from breaking the tabwriter formatting.
+	// Add spaces to prevent ANSI escape codes from breaking the tabwriter formatting.
 	_, err = cyan.Fprint(w, "CLUSTER_ID\t     ENVIRONMENT\t     ACTIVE\t     SERVER")
 	if err != nil {
 		return "", err
@@ -160,6 +160,7 @@ func ListClusters(env string, client *api.Client) (string, error) {
 		fmt.Fprintf(w, "\n%s\t%s\t%s\t%s", cluster.ID, cluster.Environment, strconv.FormatBool(cluster.Active), cluster.ServerURL)
 	}
 
+	fmt.Fprintln(w, "")
 	if err := w.Flush(); err != nil {
 		return "", err
 	}
