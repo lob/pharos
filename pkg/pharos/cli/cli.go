@@ -131,11 +131,11 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 // ListClusters retrieves all clusters and returns a formatted string
 // of all clusters. If given an environment, ListClusters will only retrieve
 // the clusters for that environment.
-func ListClusters(env string, active bool, client *api.Client) (string, error) {
+func ListClusters(env string, inactive bool, client *api.Client) (string, error) {
 	query := make(map[string]string)
-	// If active is true, we'll only list active clusters, otherwise we'll list
+	// If inactive is false, we'll only list active clusters, otherwise we'll list
 	// all clusters, including inactive ones.
-	if active {
+	if !inactive {
 		query["active"] = "true"
 	}
 	if env != "" {

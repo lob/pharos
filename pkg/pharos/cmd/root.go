@@ -11,7 +11,6 @@ import (
 // Declare some variables to be used as flags in various commands.
 var file string
 var pharosConfig string
-var active bool
 
 // rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{

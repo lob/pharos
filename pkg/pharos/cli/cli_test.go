@@ -311,7 +311,7 @@ func TestListClusters(t *testing.T) {
 
 	t.Run("successfully lists all clusters", func(tt *testing.T) {
 		// Lists all non-deleted clusters.
-		clusters, err := ListClusters("", false, client)
+		clusters, err := ListClusters("", true, client)
 		assert.NoError(tt, err)
 		assert.Contains(tt, clusters, "sandbox-222222")
 		assert.Contains(tt, clusters, "sandbox-333333")
@@ -320,7 +320,7 @@ func TestListClusters(t *testing.T) {
 
 	t.Run("successfully lists all clusters for an environment", func(tt *testing.T) {
 		// List all clusters for a certain environment.
-		clusters, err := ListClusters("sandbox", false, client)
+		clusters, err := ListClusters("sandbox", true, client)
 		assert.NoError(tt, err)
 		assert.Contains(tt, clusters, "sandbox-222222")
 		assert.Contains(tt, clusters, "sandbox-333333")
@@ -328,7 +328,7 @@ func TestListClusters(t *testing.T) {
 
 	t.Run("successfully lists all active clusters for an environment", func(tt *testing.T) {
 		// List all active clusters for a certain environment.
-		clusters, err := ListClusters("staging", true, client)
+		clusters, err := ListClusters("staging", false, client)
 		assert.NoError(tt, err)
 		assert.Contains(tt, clusters, "staging-555555")
 	})

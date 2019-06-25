@@ -11,6 +11,7 @@ import (
 
 // Declare some variables to be used as flags.
 var environment string
+var inactive bool
 
 // ListCmd implements a CLI command that allows users to retrieve a list of all clusters
 // currently registered with pharos-api.
@@ -23,12 +24,12 @@ var ListCmd = &cobra.Command{
 		if err != nil {
 			return errors.Wrap(err, "unable to create client from pharos config file")
 		}
-		return runList(environment, active, client)
+		return runList(environment, inactive, client)
 	},
 }
 
-func runList(env string, active bool, client *api.Client) error {
-	clusters, err := cli.ListClusters(environment, active, client)
+func runList(env string, inactive bool, client *api.Client) error {
+	clusters, err := cli.ListClusters(environment, inactive, client)
 	if err != nil {
 		return errors.Wrap(err, "failed to list clusters")
 	}
@@ -38,5 +39,5 @@ func runList(env string, active bool, client *api.Client) error {
 
 func init() {
 	ListCmd.Flags().StringVarP(&environment, "environment", "e", "", "specify environment to list clusters for")
-	ListCmd.Flags().BoolVarP(&active, "active", "a", true, "status of clusters to list")
+	ListCmd.Flags().BoolVarP(&inactive, "inactive", "i", false, "specify whether to list inactive clusters")
 }
