@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/lob/pharos/internal/test"
 	"github.com/lob/pharos/pkg/pharos/cli"
-	"github.com/lob/pharos/pkg/util/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

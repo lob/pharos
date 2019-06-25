@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/lob/pharos/internal/test"
 	"github.com/lob/pharos/pkg/pharos/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -25,9 +26,10 @@ func TestDeleteCluster(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
+	tokenGenerator := test.NewGenerator(t)
 
 	t.Run("deletes cluster by ID successfully", func(tt *testing.T) {
-		c := NewClient(&config.Config{BaseURL: srv.URL})
+		c := NewClient(&config.Config{BaseURL: srv.URL}, tokenGenerator)
 		cluster, err := c.DeleteCluster("production-pikachu")
 		assert.NoError(tt, err)
 		assert.Equal(tt, "production-pikachu", cluster.ID)
@@ -35,7 +37,7 @@ func TestDeleteCluster(t *testing.T) {
 	})
 
 	t.Run("fails to delete cluster using a bad client", func(tt *testing.T) {
-		c := NewClient(&config.Config{BaseURL: ""})
+		c := NewClient(&config.Config{BaseURL: ""}, tokenGenerator)
 		cluster, err := c.DeleteCluster("production-pikachu")
 		assert.Error(tt, err)
 		assert.Equal(tt, "", cluster.ID)
@@ -66,9 +68,10 @@ func TestListClusters(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
+	tokenGenerator := test.NewGenerator(t)
 
 	t.Run("lists clusters successfully", func(tt *testing.T) {
-		c := NewClient(&config.Config{BaseURL: srv.URL})
+		c := NewClient(&config.Config{BaseURL: srv.URL}, tokenGenerator)
 		clusters, err := c.ListClusters(nil)
 		assert.NoError(tt, err)
 
@@ -77,7 +80,7 @@ func TestListClusters(t *testing.T) {
 	})
 
 	t.Run("fails to list clusters using a bad client", func(tt *testing.T) {
-		c := NewClient(&config.Config{BaseURL: ""})
+		c := NewClient(&config.Config{BaseURL: ""}, tokenGenerator)
 		clusters, err := c.ListClusters(nil)
 		assert.Error(tt, err)
 		assert.Nil(tt, clusters)
@@ -99,16 +102,17 @@ func TestGetCluster(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
+	tokenGenerator := test.NewGenerator(t)
 
 	t.Run("retrieves cluster by ID successfully", func(tt *testing.T) {
-		c := NewClient(&config.Config{BaseURL: srv.URL})
+		c := NewClient(&config.Config{BaseURL: srv.URL}, tokenGenerator)
 		cluster, err := c.GetCluster("production-6906ce")
 		assert.NoError(tt, err)
 		assert.Equal(tt, "production", cluster.Environment)
 	})
 
 	t.Run("fails to retrieve cluster using a bad client", func(tt *testing.T) {
-		c := NewClient(&config.Config{BaseURL: ""})
+		c := NewClient(&config.Config{BaseURL: ""}, tokenGenerator)
 		cluster, err := c.GetCluster("production-6906ce")
 		assert.Error(tt, err)
 		assert.Equal(tt, "", cluster.ID)
@@ -130,9 +134,10 @@ func TestUpdateCluster(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
+	tokenGenerator := test.NewGenerator(t)
 
 	t.Run("updates cluster by ID successfully", func(tt *testing.T) {
-		c := NewClient(&config.Config{BaseURL: srv.URL})
+		c := NewClient(&config.Config{BaseURL: srv.URL}, tokenGenerator)
 		cluster, err := c.UpdateCluster("production-pikachu", true)
 		assert.NoError(tt, err)
 		assert.Equal(tt, "production-pikachu", cluster.ID)
@@ -140,7 +145,7 @@ func TestUpdateCluster(t *testing.T) {
 	})
 
 	t.Run("fails to create cluster using a bad client", func(tt *testing.T) {
-		c := NewClient(&config.Config{BaseURL: ""})
+		c := NewClient(&config.Config{BaseURL: ""}, tokenGenerator)
 		cluster, err := c.UpdateCluster("production-pikachu", true)
 		assert.Error(tt, err)
 		assert.Equal(tt, "", cluster.ID)

@@ -9,36 +9,52 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/lob/pharos/pkg/pharos/config"
+	"github.com/lob/pharos/pkg/util/token"
 	"github.com/pkg/errors"
 )
 
 // Client is a struct containing information for an api client.
 type Client struct {
-	client *http.Client
-	config *config.Config
+	client         *http.Client
+	config         *config.Config
+	TokenGenerator token.Generator
 }
 
 // NewClient creates a new Client with its own http.Client.
-func NewClient(config *config.Config) *Client {
+func NewClient(config *config.Config, generator token.Generator) *Client {
 	c := &http.Client{
 		Timeout: 10 * time.Second,
 	}
-	return &Client{c, config}
+
+	return &Client{c, config, generator}
 }
 
 // ClientFromConfig creates a new Client with its own http.Client
-// using the config file provided.
+// using the config file provided and a new token generator that uses
+// AWS's stsAPI.
 func ClientFromConfig(configFile string) (*Client, error) {
 	c, err := config.New(configFile)
 	if err != nil {
 		return nil, err
 	}
+
+	// Load config from file.
 	err = c.Load()
 	if err != nil {
 		return nil, err
 	}
-	return NewClient(c), nil
+
+	// Create token generator.
+	s, err := session.NewSessionWithOptions(session.Options{Profile: c.AWSProfile})
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to create session for authorization token")
+	}
+	stsAPI := sts.New(s)
+
+	return NewClient(c, token.NewGenerator(stsAPI)), nil
 }
 
 // send sends a http.Request for the specified method and path, with the given body encoded as JSON.
@@ -56,7 +72,14 @@ func (c *Client) send(method string, path string, query map[string]string, body 
 	if err != nil {
 		return errors.Wrap(err, "unable to create http request")
 	}
+
+	// Set headers, including authorization token.
 	req.Header.Set("Content-Type", "application/json")
+	token, err := c.TokenGenerator.GetSTSToken()
+	if err != nil {
+		return errors.Wrap(err, "unable to create authorization token")
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 
 	// Add queries to request if there are any.
 	if query != nil {

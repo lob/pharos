@@ -7,7 +7,7 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/lob/pharos/pkg/pharos-api-server/application"
-	"github.com/lob/pharos/pkg/shared/token"
+	"github.com/lob/pharos/pkg/util/token"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

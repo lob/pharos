@@ -5,7 +5,7 @@ import (
 	"github.com/lob/metrics-go"
 	"github.com/lob/pharos/pkg/pharos-api-server/config"
 	"github.com/lob/pharos/pkg/pharos-api-server/database"
-	"github.com/lob/pharos/pkg/shared/token"
+	"github.com/lob/pharos/pkg/util/token"
 	"github.com/lob/sentry-echo/pkg/sentry"
 	"github.com/pkg/errors"
 )
