@@ -44,15 +44,15 @@ From within the pharos directory, you can run the Pharos CLI with the config fla
 specific config file. You can use the config file in the testdata folder to connect automatically
 to your local Pharos server.
 
-Example: `bin/pharos clusters list -c /pkg/pharos/testdata/pharosConfig`
+Example: `bin/pharos clusters list -c pkg/pharos/testdata/pharosConfig`
 
-**IMPORTANT NOTE: If you're running a command that will edit or create a new kubeconfig, you will need to run it with
-the file flag `-f` to prevent overwriting or modifying your existing kubeconfig file at
-`$HOME/.kube/config`.** Some commands that edit kubeconfig files will also create new ones, so for those commands you
-can specify any file, even ones that don't exist. The only commands that require an existing kubeconfig file are
-`pharos clusters switch` and `pharos clusters current`.
+**IMPORTANT NOTE: If you're running a command that will edit or create a new kubeconfig, you will
+need to run it with the file flag `-f` to prevent overwriting or modifying your existing kubeconfig
+file at `$HOME/.kube/config`.** Some commands that edit kubeconfig files will also create new ones,
+so for those commands you can specify any file, even ones that don't exist. The only commands that
+require an existing kubeconfig file are `pharos clusters switch` and `pharos clusters current`.
 
-Example: `bin/pharos clusters get sandbox -c /pkg/pharos/testdata/pharosConfig -f test/test1`
-This command above will create a new kubeconfig file at `./test/test1` if it succeeds.
+Example: `bin/pharos clusters get sandbox -c pkg/pharos/testdata/pharosConfig -f test/test1` This
+command will create a new kubeconfig file at `./test/test1` if it succeeds.
 
 Happy testing!
