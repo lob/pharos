@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/lob/pharos/pkg/pharos/kubeconfig"
+	"github.com/lob/pharos/pkg/pharos/cli"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -18,7 +18,7 @@ var CurrentCmd = &cobra.Command{
 }
 
 func runCurrent(kubeConfigFile string) error {
-	clusterName, err := kubeconfig.CurrentCluster(kubeConfigFile)
+	clusterName, err := cli.CurrentCluster(kubeConfigFile)
 	if err != nil {
 		return errors.Wrap(err, "unable to retrieve cluster")
 	}

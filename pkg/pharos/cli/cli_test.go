@@ -1,4 +1,4 @@
-package kubeconfig
+package cli
 
 import (
 	"net/http"
@@ -243,6 +243,104 @@ func TestGetCluster(t *testing.T) {
 	})
 }
 
+func TestListClusters(t *testing.T) {
+	// Set up dummy server for testing.
+	listClusters := []byte(`[{
+		"id":                     "production-eggs",
+		"environment":            "production",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 false
+	},{
+		"id":                     "sandbox-333333",
+		"environment":            "sandbox",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	},{
+		"id":                     "sandbox-222222",
+		"environment":            "sandbox",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 false
+	}]`)
+	listSandbox := []byte(`[{
+		"id":                     "sandbox-333333",
+		"environment":            "sandbox",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	},{
+		"id":                     "sandbox-222222",
+		"environment":            "sandbox",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 false
+	}]`)
+	listActiveStaging := []byte(`[{
+		"id":                     "staging-555555",
+		"environment":            "staging",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	}]`)
+
+	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		var response []byte
+		switch r.URL.String() {
+		case "/clusters":
+			response = listClusters
+		case "/clusters?environment=sandbox":
+			response = listSandbox
+		case "/clusters?active=true&environment=staging":
+			response = listActiveStaging
+		}
+		_, err := rw.Write(response)
+		require.NoError(t, err)
+	}))
+	defer srv.Close()
+
+	// Set BaseURL in config to be the url of the dummy server.
+	client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
+
+	t.Run("successfully lists all clusters", func(tt *testing.T) {
+		// Lists all non-deleted clusters.
+		clusters, err := ListClusters("", true, client)
+		assert.NoError(tt, err)
+		assert.Contains(tt, clusters, "sandbox-222222")
+		assert.Contains(tt, clusters, "sandbox-333333")
+		assert.Contains(tt, clusters, "production-eggs")
+	})
+
+	t.Run("successfully lists all clusters for an environment", func(tt *testing.T) {
+		// List all clusters for a certain environment.
+		clusters, err := ListClusters("sandbox", true, client)
+		assert.NoError(tt, err)
+		assert.Contains(tt, clusters, "sandbox-222222")
+		assert.Contains(tt, clusters, "sandbox-333333")
+	})
+
+	t.Run("successfully lists all active clusters for an environment", func(tt *testing.T) {
+		// List all active clusters for a certain environment.
+		clusters, err := ListClusters("staging", false, client)
+		assert.NoError(tt, err)
+		assert.Contains(tt, clusters, "staging-555555")
+	})
+
+	t.Run("errors related to retrieving cluster information from the pharos API", func(tt *testing.T) {
+		// Failed to list cluster.
+		_, err := ListClusters("random", true, client)
+		assert.Error(tt, err)
+		assert.Contains(tt, err.Error(), "failed to list clusters")
+	})
+}
+
 func TestSwitchCluster(t *testing.T) {
 	t.Run("successfully switches to cluster", func(tt *testing.T) {
 		// Create temporary test config file and defer cleanup.
@@ -296,25 +394,5 @@ func TestSwitchCluster(t *testing.T) {
 		err := SwitchCluster(nonExistentConfig, "sandbox")
 		assert.Error(tt, err)
 		assert.Contains(tt, err.Error(), "no such file or directory")
-	})
-}
-
-func TestConfigFromFile(t *testing.T) {
-	t.Run("successfully loads from config file", func(tt *testing.T) {
-		kubeConfig, err := configFromFile(config)
-		assert.NoError(tt, err)
-		assert.NotNil(tt, kubeConfig)
-	})
-
-	t.Run("returns empty kubeconfig struct and no error when loading from empty config file", func(tt *testing.T) {
-		kubeConfig, err := configFromFile(emptyConfig)
-		assert.NoError(tt, err)
-		assert.True(tt, reflect.DeepEqual(kubeConfig, clientcmdapi.NewConfig()))
-	})
-
-	t.Run("returns nil and error when loading from nonexistent file", func(tt *testing.T) {
-		kubeConfig, err := configFromFile(nonExistentConfig)
-		assert.Error(tt, err)
-		assert.Nil(tt, kubeConfig)
 	})
 }

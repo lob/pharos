@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/lob/pharos/pkg/pharos/kubeconfig"
+	"github.com/lob/pharos/pkg/pharos/cli"
 	"github.com/lob/pharos/pkg/util/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,7 +21,7 @@ func TestRunSwitch(t *testing.T) {
 		require.NoError(tt, err)
 
 		// Check that switch was successful.
-		clusterName, err := kubeconfig.CurrentCluster(configFile)
+		clusterName, err := cli.CurrentCluster(configFile)
 		require.NoError(tt, err)
 		require.Equal(tt, "sandbox-111111", clusterName)
 	})
