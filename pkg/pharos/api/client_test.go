@@ -17,7 +17,7 @@ import (
 const configFile = "../testdata/pharosConfig"
 
 func TestClient(t *testing.T) {
-	var testResponse = []byte(`{
+	testResponse := []byte(`{
 		"id": "production-6906ce",
 		"environment": "production",
 		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",

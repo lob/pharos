@@ -14,7 +14,7 @@ import (
 func TestRunList(t *testing.T) {
 	t.Run("successfully lists information about clusters", func(tt *testing.T) {
 		// Set up dummy server for testing.
-		var listSandboxClusters = []byte(`[{
+		listSandboxClusters := []byte(`[{
 			"id":                     "sandbox-333333",
 			"environment":            "sandbox",
 			"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",

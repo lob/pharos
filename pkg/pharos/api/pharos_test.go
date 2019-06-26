@@ -11,7 +11,7 @@ import (
 )
 
 func TestDeleteCluster(t *testing.T) {
-	var testResponse = []byte(`{
+	testResponse := []byte(`{
 		"id":                     "production-pikachu",
 		"environment":            "production",
 		"server_url":             "https://prod.elb.us-west-2.amazonaws.com:6443",
@@ -43,7 +43,7 @@ func TestDeleteCluster(t *testing.T) {
 }
 
 func TestListClusters(t *testing.T) {
-	var testResponse = []byte(`[
+	testResponse := []byte(`[
 		{
 			"id": "production-6906ce",
 			"environment": "production",
@@ -51,8 +51,7 @@ func TestListClusters(t *testing.T) {
 			"server_url": "https://prod.elb.us-west-2.amazonaws.com:6443",
 			"object": "cluster",
 			"active": true
-		},
-		{
+		},{
 			"id": "production-111111",
 			"environment": "production",
 			"cluster_authority_data": "LS0tLS1CRsdJTiBDR...",
@@ -86,7 +85,7 @@ func TestListClusters(t *testing.T) {
 }
 
 func TestGetCluster(t *testing.T) {
-	var testResponse = []byte(`{
+	testResponse := []byte(`{
 		"id": "production-6906ce",
 		"environment": "production",
 		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",

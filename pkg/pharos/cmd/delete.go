@@ -12,7 +12,7 @@ import (
 // DeleteCmd implements a CLI command that allows users to mark a cluster
 // as deleted in the Pharos database.
 var DeleteCmd = &cobra.Command{
-	Use:   "delete <cluster-id>",
+	Use:   "delete <cluster_id>",
 	Short: "Deletes the specified cluster.",
 	Long:  "Marks the specified cluster as deleted in Pharos.",
 	Args:  func(cmd *cobra.Command, args []string) error { return argID(args) },

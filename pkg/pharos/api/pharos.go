@@ -14,7 +14,7 @@ func (c *Client) DeleteCluster(clusterID string) (model.Cluster, error) {
 	var cluster model.Cluster
 	err := c.send(http.MethodDelete, fmt.Sprintf("clusters/%s", clusterID), nil, nil, &cluster)
 	if err != nil {
-		return cluster, errors.Wrap(err, fmt.Sprintf("failed to delete cluster %s", clusterID))
+		return cluster, errors.Wrapf(err, "failed to delete cluster %s", clusterID)
 	}
 
 	return cluster, nil

@@ -14,7 +14,7 @@ import (
 func TestRunDelete(t *testing.T) {
 	t.Run("successfully deletes a cluster", func(tt *testing.T) {
 		// Set up dummy server for testing.
-		var deleteClusters = []byte(`{
+		deleteClusters := []byte(`{
 			"id":                     "sandbox-333333",
 			"environment":            "sandbox",
 			"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
