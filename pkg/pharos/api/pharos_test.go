@@ -10,8 +10,40 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestDeleteCluster(t *testing.T) {
+	testResponse := []byte(`{
+		"id":                     "production-pikachu",
+		"environment":            "production",
+		"server_url":             "https://prod.elb.us-west-2.amazonaws.com:6443",
+		"cluster_authority_data": "asdasd",
+		"deleted":                true,
+		"active":                 true
+	}`)
+
+	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		_, err := rw.Write(testResponse)
+		require.NoError(t, err)
+	}))
+	defer srv.Close()
+
+	t.Run("deletes cluster by ID successfully", func(tt *testing.T) {
+		c := NewClient(&config.Config{BaseURL: srv.URL})
+		cluster, err := c.DeleteCluster("production-pikachu")
+		assert.NoError(tt, err)
+		assert.Equal(tt, "production-pikachu", cluster.ID)
+		assert.Equal(tt, true, cluster.Deleted)
+	})
+
+	t.Run("fails to delete cluster using a bad client", func(tt *testing.T) {
+		c := NewClient(&config.Config{BaseURL: ""})
+		cluster, err := c.DeleteCluster("production-pikachu")
+		assert.Error(tt, err)
+		assert.Equal(tt, "", cluster.ID)
+	})
+}
+
 func TestListClusters(t *testing.T) {
-	var testResponse = []byte(`[
+	testResponse := []byte(`[
 		{
 			"id": "production-6906ce",
 			"environment": "production",
@@ -19,8 +51,7 @@ func TestListClusters(t *testing.T) {
 			"server_url": "https://prod.elb.us-west-2.amazonaws.com:6443",
 			"object": "cluster",
 			"active": true
-		},
-		{
+		},{
 			"id": "production-111111",
 			"environment": "production",
 			"cluster_authority_data": "LS0tLS1CRsdJTiBDR...",
@@ -54,7 +85,7 @@ func TestListClusters(t *testing.T) {
 }
 
 func TestGetCluster(t *testing.T) {
-	var testResponse = []byte(`{
+	testResponse := []byte(`{
 		"id": "production-6906ce",
 		"environment": "production",
 		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",

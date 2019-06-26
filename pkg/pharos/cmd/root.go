@@ -42,6 +42,7 @@ func init() {
 	clustersCmd.AddCommand(SwitchCmd)
 	clustersCmd.AddCommand(GetCmd)
 	clustersCmd.AddCommand(ListCmd)
+	clustersCmd.AddCommand(DeleteCmd)
 }
 
 // argID prevents commands from being run unless exactly one argument (a cluster name or id)
