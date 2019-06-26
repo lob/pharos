@@ -27,7 +27,7 @@ func extractAuthToken(c echo.Context) (string, error) {
 }
 
 // Middleware attaches an authentication middleware that authenticates a request
-// and attaches a token.Idenity struct to the request if properly authenticated.
+// and attaches a token.Identity struct to the request if properly authenticated.
 func Middleware(verifier token.Verifier) echo.MiddlewareFunc {
 	am := authMiddleware{verifier}
 
