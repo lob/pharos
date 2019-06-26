@@ -33,7 +33,7 @@ func runUpdate(id string, active bool, client *api.Client) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%s CLUSTER %s UPDATED TO STATUS %t\n", color.GreenString("SUCCESS:"), cluster.ID, cluster.Active)
+	fmt.Printf("%s CLUSTER %s ACTIVE STATUS UPDATED TO %t\n", color.GreenString("SUCCESS:"), cluster.ID, cluster.Active)
 	return nil
 }
 
