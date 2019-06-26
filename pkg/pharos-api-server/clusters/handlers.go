@@ -14,7 +14,7 @@ type handler struct {
 }
 
 func (h *handler) list(c echo.Context) error {
-	var clusters []*model.Cluster
+	clusters := make([]*model.Cluster, 0)
 
 	err := h.app.DB.
 		Model(&clusters).

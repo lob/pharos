@@ -5,6 +5,7 @@ import (
 	"github.com/lob/metrics-go"
 	"github.com/lob/pharos/pkg/pharos-api-server/config"
 	"github.com/lob/pharos/pkg/pharos-api-server/database"
+	"github.com/lob/pharos/pkg/shared/token"
 	"github.com/lob/sentry-echo/pkg/sentry"
 	"github.com/pkg/errors"
 )
@@ -12,10 +13,11 @@ import (
 // App contains necessary references that will be persisted throughout the
 // application's lifecycle.
 type App struct {
-	Config  config.Config
-	DB      *pg.DB
-	Metrics metrics.Metrics
-	Sentry  sentry.Sentry
+	Config        config.Config
+	DB            *pg.DB
+	Metrics       metrics.Metrics
+	Sentry        sentry.Sentry
+	TokenVerifier token.Verifier
 }
 
 // New creates a new instance of App with Config, DB connection, Metrics and Sentry.
@@ -43,5 +45,7 @@ func New() (App, error) {
 		return App{}, errors.Wrap(err, "application")
 	}
 
-	return App{cfg, db, m, s}, nil
+	v := token.NewVerifier()
+
+	return App{cfg, db, m, s, v}, nil
 }

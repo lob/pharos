@@ -10,7 +10,7 @@
   version = "2.2.0"
 
 [[projects]]
-  digest = "1:898b54728c29582198dc5a518630db42ad4012c63e7295a8fb5bec9652ec3082"
+  digest = "1:c35939432de12624b062756e5fd08b408e642255c0a55748ae990bb65092488b"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -36,8 +36,8 @@
     "service/sts/stsiface",
   ]
   pruneopts = "UT"
-  revision = "b9b2c2cd61a6814e3cd5d07e4c200dac18b357a4"
-  version = "v1.19.49"
+  revision = "e46d74c7f7fbfb66376097b38e466ab031864764"
+  version = "v1.20.8"
 
 [[projects]]
   digest = "1:fed1f537c2f1269fe475a8556c393fe466641682d73ef8fd0491cd3aa1e47bad"
@@ -56,12 +56,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:938a2672d6ebbb7f7bc63eee3e4b9464c16ffcf77ec8913d3edbf32b4e3984dd"
+  digest = "1:865079840386857c809b72ce300be7580cb50d3d3129ce11bf9aa6ca2bc1934a"
   name = "github.com/fatih/color"
   packages = ["."]
   pruneopts = "UT"
-  revision = "570b54cabe6b8eb0bc2dfce68d964677d63b5260"
-  version = "v1.5.0"
+  revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
+  version = "v1.7.0"
 
 [[projects]]
   digest = "1:d18f6f088d7d8365df47f49dfa24b6ff6701a941118ffda30c589d1bd954074b"
@@ -160,12 +160,12 @@
   version = "v1.0"
 
 [[projects]]
-  branch = "master"
   digest = "1:01ed62f8f4f574d8aff1d88caee113700a2b44c42351943fa73cc1808f736a50"
   name = "github.com/jinzhu/inflection"
   packages = ["."]
   pruneopts = "UT"
   revision = "f5c5f50e6090ae76a29240b61ae2a90dd810112e"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:bb81097a5b62634f3e9fec1014657855610c82d19b9a40c17612e32651e35dca"
@@ -240,12 +240,12 @@
   revision = "4b86a325ce2aa54cb3441ccefe57b0981bf62deb"
 
 [[projects]]
-  digest = "1:7c084e0e780596dd2a7e20d25803909a9a43689c153de953520dfbc0b0e51166"
+  digest = "1:c658e84ad3916da105a761660dcaeb01e63416c8ec7bc62256a9b411a05fcd67"
   name = "github.com/mattn/go-colorable"
   packages = ["."]
   pruneopts = "UT"
-  revision = "8029fb3788e5a4a9c00e415f586a6d033f5d38b3"
-  version = "v0.1.2"
+  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
+  version = "v0.0.9"
 
 [[projects]]
   digest = "1:9b90c7639a41697f3d4ad12d7d67dfacc9a7a4a6e0bbfae4fc72d0da57c28871"
@@ -360,7 +360,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2b3ab59cc44bc71aa369afc8ff5cd18e9628cc23e172c6969e091f4f4252fdbd"
+  digest = "1:dc27b2d557157b1f4adc7f53c1b2894b067289ea3bb02175611dc1bfaf6cca0f"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
@@ -369,7 +369,7 @@
     "ssh/terminal",
   ]
   pruneopts = "UT"
-  revision = "f99c8df09eb5bff426315721bfa5f16a99cad32c"
+  revision = "cc06ce4a13d484c0101a9e92913248488a75786d"
 
 [[projects]]
   branch = "master"
@@ -384,7 +384,7 @@
     "idna",
   ]
   pruneopts = "UT"
-  revision = "461777fb6f67e8cb9d70cda16573678d085a74cf"
+  revision = "3b0461eec859c4b73bb64fdc8285971fd33e3938"
 
 [[projects]]
   branch = "master"
@@ -399,14 +399,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7dc7c981bc694f713f6b082ecb7417d8935b74eff5dece50405faa6af62e1ebc"
+  digest = "1:77499c6b3771d12291f289b1f6a5877abc5946d0e85f5930d562d6dcc417137c"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "1e42afee0f762ed3d76e6dd942e4181855fd1849"
+  revision = "e07cf5db2756114766d998ec31e7135ff8c427ed"
 
 [[projects]]
   digest = "1:8d8faad6b12a3a4c819a3f9618cb6ee1fa1cfc33253abeeea8b55336721e3405"
@@ -563,12 +563,12 @@
   version = "v11.0.0"
 
 [[projects]]
-  digest = "1:fa0be820e3b9d58b99264b0ca771ceeb36c7293f8409f70455d4a1e5253a87a0"
+  digest = "1:c283ca5951eb7d723d3300762f96ff94c2ea11eaceb788279e2b7327f92e4f2a"
   name = "k8s.io/klog"
   packages = ["."]
   pruneopts = "UT"
-  revision = "78315d914a8af2453db4864e69230b647b1ff711"
-  version = "v0.3.2"
+  revision = "d98d8acdac006fb39831f1b25640813fef9c314f"
+  version = "v0.3.3"
 
 [[projects]]
   branch = "master"
