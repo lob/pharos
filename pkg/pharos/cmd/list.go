@@ -39,5 +39,5 @@ func runList(env string, inactive bool, client *api.Client) error {
 
 func init() {
 	ListCmd.Flags().StringVarP(&environment, "environment", "e", "", "specify environment to list clusters for")
-	ListCmd.Flags().BoolVarP(&inactive, "inactive", "i", false, "specify whether to list inactive clusters")
+	ListCmd.Flags().BoolVarP(&inactive, "inactive", "i", false, "specify whether to include inactive clusters in the list")
 }
