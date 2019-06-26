@@ -13,6 +13,12 @@ type user struct {
 	Name string `json:"name"`
 }
 
+type query struct {
+	Environment string `query:"env"`
+	Active      bool   `query:"active"`
+	Foo         string
+}
+
 func TestCustomBinderBind(t *testing.T) {
 	cb := &customBinder{}
 	u := &user{}
@@ -59,6 +65,36 @@ func TestCustomBinderBind(t *testing.T) {
 
 		err := cb.bind(u, c)
 		assert.NoError(tt, err)
+	})
+
+	t.Run("successfully binds query", func(tt *testing.T) {
+		c := newQueryContext(tt, "env=test&active=true&Foo=bar")
+
+		q := &query{}
+		err := cb.bind(q, c)
+		assert.NoError(tt, err)
+
+		assert.Equal(tt, "test", q.Environment)
+		assert.Equal(tt, true, q.Active)
+		assert.Equal(tt, "bar", q.Foo)
+	})
+
+	t.Run("errors binding query with invalid fields", func(tt *testing.T) {
+		c := newQueryContext(tt, "active=test")
+
+		q := &query{}
+		err := cb.bind(q, c)
+		assert.Error(tt, err)
+		assert.Contains(tt, err.Error(), "active must be a boolean")
+	})
+
+	t.Run("errors binding query with unknown fields", func(tt *testing.T) {
+		c := newQueryContext(tt, "biz=baz")
+
+		q := &query{}
+		err := cb.bind(q, c)
+		assert.Error(tt, err)
+		assert.Contains(tt, err.Error(), "biz is not allowed")
 	})
 
 }

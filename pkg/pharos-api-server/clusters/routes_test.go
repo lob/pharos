@@ -14,5 +14,5 @@ func TestRegisterRoutes(t *testing.T) {
 
 	RegisterRoutes(e, app)
 
-	assert.Len(t, e.Routes(), 4)
+	assert.Len(t, e.Routes(), 5)
 }

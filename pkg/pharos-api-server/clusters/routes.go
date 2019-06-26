@@ -13,4 +13,5 @@ func RegisterRoutes(e *echo.Echo, app application.App) {
 	e.GET("/clusters/:id", h.retrieve)
 	e.DELETE("/clusters/:id", h.delete)
 	e.POST("/clusters", h.create)
+	e.POST("/clusters/:id", h.update)
 }
