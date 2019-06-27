@@ -30,6 +30,6 @@ func runDelete(id string, client *api.Client) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%s CLUSTER %s DELETED\n", color.GreenString("SUCCESS:"), cluster.ID)
+	fmt.Printf("%s DELETED CLUSTER %s\n", color.GreenString("SUCCESS:"), cluster.ID)
 	return nil
 }

@@ -27,7 +27,7 @@ func runSwitch(kubeConfigFile string, context string) error {
 		return errors.Wrap(err, "cluster switch unsuccessful")
 	}
 
-	fmt.Printf("%s CLUSTER SWITCH COMPLETE\n", color.GreenString("SUCCESS:"))
+	fmt.Printf("%s SWITCHED CLUSTER TO %s\n", color.GreenString("SUCCESS:"), context)
 	return nil
 }
 

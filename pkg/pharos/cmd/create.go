@@ -10,12 +10,14 @@ import (
 )
 
 // Declare some variables to be used as flags.
-var clusterAuthorityData string
-var server string
+var (
+	clusterAuthorityData string
+	server               string
+)
 
 // CreateCmd implements a CLI command that allows users to create a cluster in Pharos.
 var CreateCmd = &cobra.Command{
-	Use:     "create <cluster-id>",
+	Use:     "create <cluster_id>",
 	Short:   "Creates the specified cluster",
 	Long:    "Creates the specified cluster in Pharos.",
 	Args:    func(cmd *cobra.Command, args []string) error { return argID(args) },
@@ -34,7 +36,7 @@ func runCreate(id string, env string, authorityData string, server string, clien
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%s CLUSTER %s CREATED\n", color.GreenString("SUCCESS:"), cluster.ID)
+	fmt.Printf("%s CREATED CLUSTER %s\n", color.GreenString("SUCCESS:"), cluster.ID)
 	return nil
 }
 
