@@ -401,7 +401,7 @@ func TestSwitchCluster(t *testing.T) {
 
 func TestSyncClusters(t *testing.T) {
 	// Set up dummy server for testing.
-	syncResponse := []byte(`[{
+	syncInactiveResponse := []byte(`[{
 		"id":                     "sandbox-333333",
 		"environment":            "sandbox",
 		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
@@ -437,9 +437,38 @@ func TestSyncClusters(t *testing.T) {
 		"object":                 "cluster",
 		"active":                 true
 	}]`)
+	syncResponse := []byte(`[{
+		"id":                     "sandbox-444444",
+		"environment":            "sandbox",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	}, {
+		"id":                     "core-111111",
+		"environment":            "core",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.com",
+		"object":                 "cluster",
+		"active":                 true
+	}, {
+		"id":                     "staging-666666",
+		"environment":            "staging",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	}]`)
 
 	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		_, err := rw.Write(syncResponse)
+		var response []byte
+		switch r.URL.String() {
+		case "/clusters?active=true":
+			response = syncResponse
+		case "/clusters":
+			response = syncInactiveResponse
+		}
+		_, err := rw.Write(response)
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
@@ -453,8 +482,8 @@ func TestSyncClusters(t *testing.T) {
 		configFile := test.CopyTestFile(tt, "../testdata", "sync", config)
 		defer os.Remove(configFile)
 
-		// Merge cluster information from active cluster for sandbox into configFile.
-		err := SyncClusters(configFile, false, false, client)
+		// Sync clusters, including inactive ones.
+		err := SyncClusters(configFile, true, false, false, client)
 		assert.NoError(tt, err)
 
 		// Load kubeconfig file for testing.
@@ -514,8 +543,8 @@ func TestSyncClusters(t *testing.T) {
 		configFile := test.CopyTestFile(tt, "../testdata", "sync", config)
 		defer os.Remove(configFile)
 
-		// Merge cluster information from active cluster for sandbox into configFile.
-		err := SyncClusters(configFile, false, true, client)
+		// Sync clusters, including inactive ones.
+		err := SyncClusters(configFile, true, false, true, client)
 		assert.NoError(tt, err)
 
 		// Load kubeconfig file for testing.
@@ -528,7 +557,7 @@ func TestSyncClusters(t *testing.T) {
 		assert.Equal(tt, context.Cluster, "sandbox-444444")
 		assert.Equal(tt, context.AuthInfo, "iam-sandbox-444444")
 
-		// Check that context and clusters for old clusters no longer exists in the file.
+		// Check that contextx and clusters for old clusters no longer exist in the file.
 		_, ok = kubeConfig.Clusters["sandbox-111111"]
 		assert.False(tt, ok)
 		_, ok = kubeConfig.Contexts["sandbox-111111"]
@@ -540,8 +569,8 @@ func TestSyncClusters(t *testing.T) {
 		nonExistentConfig := "../testdata/nonexistentFile"
 		defer os.Remove(nonExistentConfig)
 
-		// Merge cluster information from active cluster for sandbox into configFile.
-		err := SyncClusters(nonExistentConfig, false, false, client)
+		// Sync clusters, including inactive ones.
+		err := SyncClusters(nonExistentConfig, true, false, false, client)
 		assert.NoError(tt, err)
 
 		// Load kubeconfig file for testing.
@@ -571,12 +600,35 @@ func TestSyncClusters(t *testing.T) {
 		assert.True(tt, ok)
 	})
 
+	t.Run("successfully syncs only active clusters", func(tt *testing.T) {
+		// Create temporary test config file and defer cleanup.
+		configFile := test.CopyTestFile(tt, "../testdata", "sync", config)
+		defer os.Remove(configFile)
+
+		// Sync only active clusters.
+		err := SyncClusters(configFile, false, false, false, client)
+		assert.NoError(tt, err)
+
+		// Load kubeconfig file for testing.
+		kubeConfig, err := configFromFile(configFile)
+		assert.NoError(tt, err)
+
+		// Check that active clusters were added.
+		_, ok := kubeConfig.Clusters["sandbox-444444"]
+		assert.True(tt, ok)
+
+		// Check that there were no inactive clusters added.
+		_, ok = kubeConfig.Clusters["staging-555555"]
+		assert.False(tt, ok)
+
+	})
+
 	t.Run("takes no action when --dry-run flag is set", func(tt *testing.T) {
 		oldKubeConfig, err := configFromFile(config)
 		assert.NoError(tt, err)
 
 		// Run get cluster with dry-run.
-		err = SyncClusters(config, true, false, client)
+		err = SyncClusters(config, false, true, false, client)
 		assert.NoError(tt, err)
 
 		// Check that kubeconfig file has not been modified.
@@ -586,14 +638,14 @@ func TestSyncClusters(t *testing.T) {
 	})
 
 	t.Run("errors on merging with malformed kubeconfig file", func(tt *testing.T) {
-		err := SyncClusters(malformedConfig, true, false, client)
+		err := SyncClusters(malformedConfig, false, true, false, client)
 		assert.Error(tt, err)
 		assert.Contains(tt, err.Error(), "unable to load kubeconfig file")
 	})
 
 	t.Run("errors related to retrieving cluster information from the pharos API", func(tt *testing.T) {
 		// Failed to list cluster.
-		err := SyncClusters(config, false, false, api.NewClient(&configpkg.Config{BaseURL: ""}, tokenGenerator))
+		err := SyncClusters(config, false, false, false, api.NewClient(&configpkg.Config{BaseURL: ""}, tokenGenerator))
 		assert.Error(tt, err)
 		assert.Contains(tt, err.Error(), "failed to list clusters")
 	})

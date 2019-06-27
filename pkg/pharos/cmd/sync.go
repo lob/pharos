@@ -17,19 +17,19 @@ var overwrite bool
 // from all currently existing clusters in Pharos and merge it into an existing kubeconfig file.
 var SyncCmd = &cobra.Command{
 	Use:   "sync",
-	Short: "Retrieves information from all clusters",
-	Long:  "Retrieves information from all clusters and merges it into designated kubeconfig file.",
+	Short: "Retrieves information from clusters",
+	Long:  "Retrieves information from specified clusters and merges it into designated kubeconfig file.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		client, err := api.ClientFromConfig(pharosConfig)
 		if err != nil {
 			return errors.Wrap(err, "unable to create client from pharos config file")
 		}
-		return runSync(file, dryRun, overwrite, client)
+		return runSync(file, inactive, dryRun, overwrite, client)
 	},
 }
 
-func runSync(kubeConfigFile string, dryRun bool, overwrite bool, client *api.Client) error {
-	err := cli.SyncClusters(kubeConfigFile, dryRun, overwrite, client)
+func runSync(kubeConfigFile string, inactive bool, dryRun bool, overwrite bool, client *api.Client) error {
+	err := cli.SyncClusters(kubeConfigFile, inactive, dryRun, overwrite, client)
 	if err != nil {
 		return errors.Wrap(err, "failed to sync clusters")
 	}
@@ -37,6 +37,7 @@ func runSync(kubeConfigFile string, dryRun bool, overwrite bool, client *api.Cli
 }
 
 func init() {
+	SyncCmd.Flags().BoolVarP(&inactive, "inactive", "i", false, "specify whether to sync inactive clusters")
 	SyncCmd.Flags().BoolVarP(&dryRun, "dry-run", "d", false, "prints the resulting kubeconfig to terminal without any other action")
 	SyncCmd.Flags().BoolVarP(&overwrite, "overwrite", "o", false, "overwrite the kubeconfig file with retrieved clusters")
 	SyncCmd.Flags().StringVarP(&file, "file", "f", fmt.Sprintf("%s/.kube/config", os.Getenv("HOME")), "specify kubeconfig file to merge into")

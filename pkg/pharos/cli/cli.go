@@ -128,9 +128,7 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 	return nil
 }
 
-// ListClusters retrieves all clusters and returns a formatted string
-// of all clusters. If given an environment, ListClusters will only retrieve
-// the clusters for that environment.
+// ListClusters retrieves clusters and returns a formatted string of clusters.
 func ListClusters(env string, inactive bool, client *api.Client) (string, error) {
 	query := make(map[string]string)
 	// If inactive is false, we'll only list active clusters, otherwise we'll list
@@ -195,9 +193,8 @@ func SwitchCluster(kubeConfigFile string, context string) error {
 	return clientcmd.WriteToFile(*kubeConfig, kubeConfigFile)
 }
 
-// SyncClusters gets information from all current existing clusters
-// and merges it into a kubeconfig file.
-func SyncClusters(kubeConfigFile string, dryRun bool, overwrite bool, client *api.Client) error {
+// SyncClusters gets information from clusters and merges it into a kubeconfig file.
+func SyncClusters(kubeConfigFile string, inactive bool, dryRun bool, overwrite bool, client *api.Client) error {
 	// Check whether given kubeconfig file already exists. If it does not, create a new kubeconfig
 	// file in the specified file location. Return an error only if file is malformed, but not
 	// if it is empty or missing. If overwrite is set to true, start with new kubeconfig file
@@ -210,7 +207,14 @@ func SyncClusters(kubeConfigFile string, dryRun bool, overwrite bool, client *ap
 		kubeConfig = clientcmdapi.NewConfig()
 	}
 
-	clusters, err := client.ListClusters(nil)
+	// If inactive is false, we'll only sync active clusters, otherwise we'll
+	// sync all clusters, including inactive ones.
+	query := make(map[string]string)
+	if !inactive {
+		query["active"] = "true"
+	}
+
+	clusters, err := client.ListClusters(query)
 	if err != nil {
 		return err
 	}

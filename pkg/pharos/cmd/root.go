@@ -12,6 +12,7 @@ import (
 var file string
 var dryRun bool
 var pharosConfig string
+var inactive bool
 
 // rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{

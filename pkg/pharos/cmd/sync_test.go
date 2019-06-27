@@ -47,7 +47,7 @@ func TestRunSync(t *testing.T) {
 		defer os.Remove(configFile)
 
 		// Merge cluster information from active cluster for sandbox into configFile.
-		err := runSync(configFile, false, false, client)
+		err := runSync(configFile, false, false, false, client)
 		assert.NoError(tt, err)
 
 		// Check that current context has not been modified.
@@ -76,7 +76,7 @@ func TestRunSync(t *testing.T) {
 		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
 
 		// Attempt to merge new cluster into configFile but this should fail because no cluster has been returned.
-		err := runSync(config, false, false, client)
+		err := runSync(config, false, false, false, client)
 		assert.Error(tt, err)
 		assert.Contains(tt, err.Error(), "failed to sync clusters")
 	})
