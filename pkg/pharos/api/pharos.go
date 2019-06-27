@@ -49,12 +49,11 @@ func (c *Client) GetCluster(clusterID string) (model.Cluster, error) {
 // and returns a Cluster containing the updated cluster.
 func (c *Client) UpdateCluster(clusterID string, active bool) (model.Cluster, error) {
 	var cluster model.Cluster
-	type temp struct {
+	update := &struct {
 		Active bool `json:"active"`
-	}
-	update := &temp{Active: active}
+	}{Active: active}
 
-	err := c.send(http.MethodPost, fmt.Sprintf("clusters/%s", clusterID), nil, &update, &cluster)
+	err := c.send(http.MethodPost, fmt.Sprintf("clusters/%s", clusterID), nil, update, &cluster)
 	if err != nil {
 		return cluster, errors.Wrapf(err, "failed to update cluster %s status to %t", clusterID, active)
 	}
