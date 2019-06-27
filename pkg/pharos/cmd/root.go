@@ -9,10 +9,12 @@ import (
 )
 
 // Declare some variables to be used as flags in various commands.
-var file string
-var dryRun bool
-var pharosConfig string
-var inactive bool
+var (
+	file         string
+	dryRun       bool
+	pharosConfig string
+	inactive     bool
+)
 
 // rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{

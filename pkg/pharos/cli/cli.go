@@ -195,15 +195,21 @@ func SwitchCluster(kubeConfigFile string, context string) error {
 
 // SyncClusters gets information from clusters and merges it into a kubeconfig file.
 func SyncClusters(kubeConfigFile string, inactive bool, dryRun bool, overwrite bool, client *api.Client) error {
-	// Check whether given kubeconfig file already exists. If it does not, create a new kubeconfig
-	// file in the specified file location. Return an error only if file is malformed, but not
-	// if it is empty or missing. If overwrite is set to true, start with new kubeconfig file
-	// regardless.
-	kubeConfig, err := configFromFile(kubeConfigFile)
-	if err != nil && !os.IsNotExist(err) {
-		return errors.Wrap(err, "unable to load kubeconfig file")
+	var (
+		kubeConfig *clientcmdapi.Config
+		err        error
+	)
+	if !overwrite {
+		// Check whether given kubeconfig file already exists. If it does not, create a new kubeconfig
+		// file in the specified file location. Return an error only if file is malformed, but not
+		// if it is empty or missing.
+		kubeConfig, err = configFromFile(kubeConfigFile)
+		if err != nil && !os.IsNotExist(err) {
+			return errors.Wrap(err, "unable to load kubeconfig file")
+		}
 	}
-	if kubeConfig == nil || overwrite {
+	// If overwrite is set to true, start with new kubeconfig file regardless.
+	if kubeConfig == nil {
 		kubeConfig = clientcmdapi.NewConfig()
 	}
 
@@ -220,9 +226,7 @@ func SyncClusters(kubeConfigFile string, inactive bool, dryRun bool, overwrite b
 	}
 
 	// Add cluster, context, and user for each cluster. There should never be
-	// more than one cluster marked active for each environment, but if there is,
-	// return an error.
-	active := map[string]bool{}
+	// more than one cluster marked active for each environment.
 	for _, cluster := range clusters {
 		clusterID := cluster.ID
 		env := cluster.Environment
@@ -233,12 +237,7 @@ func SyncClusters(kubeConfigFile string, inactive bool, dryRun bool, overwrite b
 		kubeConfig.Contexts[clusterID] = context
 
 		if cluster.Active {
-			_, ok := active[env]
-			if ok {
-				return fmt.Errorf("more than one active cluster for environment %s found", env)
-			}
 			kubeConfig.Contexts[env] = context
-			active[env] = true
 		}
 	}
 
@@ -262,6 +261,12 @@ func SyncClusters(kubeConfigFile string, inactive bool, dryRun bool, overwrite b
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%s %d CLUSTERS SYNCED AND MERGED INTO %s\n", color.GreenString("SUCCESS:"), len(clusters), kubeConfigFile)
+
+	// Write success message.
+	verb := "MERGED"
+	if overwrite {
+		verb = "OVERWROTE"
+	}
+	fmt.Printf("%s SYNCED AND %s %d CLUSTERS INTO %s\n", color.GreenString("SUCCESS:"), verb, len(clusters), kubeConfigFile)
 	return nil
 }
