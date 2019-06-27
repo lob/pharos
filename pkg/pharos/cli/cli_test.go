@@ -620,7 +620,6 @@ func TestSyncClusters(t *testing.T) {
 		// Check that there were no inactive clusters added.
 		_, ok = kubeConfig.Clusters["staging-555555"]
 		assert.False(tt, ok)
-
 	})
 
 	t.Run("takes no action when --dry-run flag is set", func(tt *testing.T) {
