@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
 	"github.com/lob/pharos/pkg/pharos/config"
@@ -53,6 +55,17 @@ func ClientFromConfig(configFile string) (*Client, error) {
 		return nil, errors.Wrap(err, "unable to create session for authorization token")
 	}
 	stsAPI := sts.New(s)
+
+	// If we are running in an EC2 instance, we use AssumeRoleARN instead
+	// of AWSProfile to figure out which role to assume.
+	if c.AssumeRoleARN != "" {
+		// Create STS-based credentials that will assume the given role.
+		s = session.Must(session.NewSession())
+		creds := stscreds.NewCredentials(s, c.AssumeRoleARN)
+
+		// Create an STS API interface that uses the assumed role's temporary credentials.
+		stsAPI = sts.New(s, &aws.Config{Credentials: creds})
+	}
 
 	return NewClient(c, token.NewGenerator(stsAPI)), nil
 }

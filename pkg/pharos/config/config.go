@@ -12,9 +12,10 @@ import (
 // Config contains the configuration for this CLI.
 // It is used to create a Client for the Pharos API server.
 type Config struct {
-	BaseURL    string `json:"base_url"`
-	AWSProfile string `json:"aws_profile"`
-	filePath   string
+	BaseURL       string `json:"base_url"`
+	AWSProfile    string `json:"aws_profile"`
+	AssumeRoleARN string `json:"assume_role_arn"`
+	filePath      string
 }
 
 const (
