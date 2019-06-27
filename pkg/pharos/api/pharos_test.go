@@ -114,3 +114,35 @@ func TestGetCluster(t *testing.T) {
 		assert.Equal(tt, "", cluster.ID)
 	})
 }
+
+func TestUpdateCluster(t *testing.T) {
+	testResponse := []byte(`{
+		"id":                     "production-pikachu",
+		"environment":            "production",
+		"server_url":             "https://prod.elb.us-west-2.amazonaws.com:6443",
+		"cluster_authority_data": "asdasd",
+		"deleted":                false,
+		"active":                 true
+	}`)
+
+	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		_, err := rw.Write(testResponse)
+		require.NoError(t, err)
+	}))
+	defer srv.Close()
+
+	t.Run("updates cluster by ID successfully", func(tt *testing.T) {
+		c := NewClient(&config.Config{BaseURL: srv.URL})
+		cluster, err := c.UpdateCluster("production-pikachu", true)
+		assert.NoError(tt, err)
+		assert.Equal(tt, "production-pikachu", cluster.ID)
+		assert.Equal(tt, true, cluster.Active)
+	})
+
+	t.Run("fails to create cluster using a bad client", func(tt *testing.T) {
+		c := NewClient(&config.Config{BaseURL: ""})
+		cluster, err := c.UpdateCluster("production-pikachu", true)
+		assert.Error(tt, err)
+		assert.Equal(tt, "", cluster.ID)
+	})
+}

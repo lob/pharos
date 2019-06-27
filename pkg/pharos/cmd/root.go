@@ -39,10 +39,11 @@ func init() {
 	// Add child commands.
 	rootCmd.AddCommand(clustersCmd)
 	clustersCmd.AddCommand(CurrentCmd)
-	clustersCmd.AddCommand(SwitchCmd)
+	clustersCmd.AddCommand(DeleteCmd)
 	clustersCmd.AddCommand(GetCmd)
 	clustersCmd.AddCommand(ListCmd)
-	clustersCmd.AddCommand(DeleteCmd)
+	clustersCmd.AddCommand(SwitchCmd)
+	clustersCmd.AddCommand(UpdateCmd)
 }
 
 // argID prevents commands from being run unless exactly one argument (a cluster name or id)
