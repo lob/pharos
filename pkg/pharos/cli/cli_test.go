@@ -7,9 +7,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/lob/pharos/internal/test"
 	"github.com/lob/pharos/pkg/pharos/api"
 	configpkg "github.com/lob/pharos/pkg/pharos/config"
-	"github.com/lob/pharos/pkg/util/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
@@ -95,9 +95,10 @@ func TestGetCluster(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
+	tokenGenerator := test.NewGenerator()
 
 	// Set BaseURL in config to be the url of the dummy server.
-	client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
+	client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
 
 	t.Run("successfully merges new kubeconfig file from cluster", func(tt *testing.T) {
 		// Create temporary test config file and defer cleanup.
@@ -305,9 +306,10 @@ func TestListClusters(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
+	tokenGenerator := test.NewGenerator()
 
 	// Set BaseURL in config to be the url of the dummy server.
-	client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
+	client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
 
 	t.Run("successfully lists all clusters", func(tt *testing.T) {
 		// Lists all non-deleted clusters.

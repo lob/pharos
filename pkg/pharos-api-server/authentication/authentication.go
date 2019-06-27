@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo"
-	"github.com/lob/pharos/pkg/shared/token"
+	"github.com/lob/pharos/pkg/util/token"
 )
 
 const authPrefix = "Bearer "

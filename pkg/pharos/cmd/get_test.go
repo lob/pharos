@@ -6,10 +6,10 @@ import (
 	"os"
 	"testing"
 
+	"github.com/lob/pharos/internal/test"
 	"github.com/lob/pharos/pkg/pharos/api"
 	"github.com/lob/pharos/pkg/pharos/cli"
 	configpkg "github.com/lob/pharos/pkg/pharos/config"
-	"github.com/lob/pharos/pkg/util/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -30,9 +30,10 @@ func TestRunGet(t *testing.T) {
 			require.NoError(tt, err)
 		}))
 		defer srv.Close()
+		tokenGenerator := test.NewGenerator()
 
 		// Set BaseURL in config to be the url of the dummy server.
-		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
+		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
 
 		// Create temporary test config file and defer cleanup.
 		configFile := test.CopyTestFile(tt, "../testdata", "get", config)
@@ -62,9 +63,10 @@ func TestRunGet(t *testing.T) {
 			require.NoError(tt, err)
 		}))
 		defer srv.Close()
+		tokenGenerator := test.NewGenerator()
 
 		// Set BaseURL in config to be the url of the dummy server.
-		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
+		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
 
 		// Attempt to merge new cluster into configFile but this should fail because no cluster has been returned.
 		err := runGet("sandbox", config, false, client)

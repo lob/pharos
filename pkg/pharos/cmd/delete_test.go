@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/lob/pharos/internal/test"
 	"github.com/lob/pharos/pkg/pharos/api"
 	configpkg "github.com/lob/pharos/pkg/pharos/config"
 	"github.com/stretchr/testify/assert"
@@ -29,9 +30,10 @@ func TestRunDelete(t *testing.T) {
 			require.NoError(tt, err)
 		}))
 		defer srv.Close()
+		tokenGenerator := test.NewGenerator()
 
 		// Set BaseURL in config to be the url of the dummy server.
-		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
+		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
 
 		err := runDelete("sandbox-333333", client)
 		assert.NoError(tt, err)
@@ -45,9 +47,10 @@ func TestRunDelete(t *testing.T) {
 			require.NoError(tt, err)
 		}))
 		defer srv.Close()
+		tokenGenerator := test.NewGenerator()
 
 		// Set BaseURL in config to be the url of the dummy server.
-		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL})
+		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
 
 		err := runDelete("sandbox-egg", client)
 		assert.Error(tt, err)

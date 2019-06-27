@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/lob/pharos/internal/test"
 	"github.com/lob/pharos/pkg/pharos/config"
 	"github.com/lob/pharos/pkg/util/model"
 	"github.com/stretchr/testify/assert"
@@ -30,19 +31,18 @@ func TestClient(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
+	tokenGenerator := test.NewGenerator()
 
 	t.Run("successfully creates a new client", func(tt *testing.T) {
-		c := NewClient(&config.Config{})
+		c := NewClient(&config.Config{}, tokenGenerator)
 		assert.NotNil(tt, c)
 
 		assert.Equal(tt, 10*time.Second, c.client.Timeout)
 	})
 
 	t.Run("send makes a successful GET request", func(tt *testing.T) {
-		c := NewClient(&config.Config{BaseURL: srv.URL})
+		c := NewClient(&config.Config{BaseURL: srv.URL, AWSProfile: "sandbox"}, tokenGenerator)
 		cluster := model.Cluster{}
-		// TODO: Test making a GET request to the pharos-api-server when that's been set up.
-		// c := NewClient(Config{BaseURL: "http://localhost:7654"})
 
 		err := c.send(http.MethodGet, "", nil, nil, &cluster)
 		assert.NoError(tt, err)
@@ -50,7 +50,7 @@ func TestClient(t *testing.T) {
 	})
 
 	t.Run("correctly bubbles up HTTP errors", func(tt *testing.T) {
-		c := NewClient(&config.Config{BaseURL: "bad url"})
+		c := NewClient(&config.Config{BaseURL: "bad url", AWSProfile: "sandbox"}, tokenGenerator)
 		cluster := model.Cluster{}
 
 		err := c.send("", "", nil, nil, &cluster)
