@@ -31,7 +31,7 @@ func TestClient(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
-	tokenGenerator := test.NewGenerator(t)
+	tokenGenerator := test.NewGenerator()
 
 	t.Run("successfully creates a new client", func(tt *testing.T) {
 		c := NewClient(&config.Config{}, tokenGenerator)

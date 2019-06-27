@@ -1,21 +1,17 @@
 package test
 
 import (
-	"testing"
-
 	"github.com/lob/pharos/pkg/util/token"
 )
 
 // mockGenerator is used to mock out token generators.
-type mockGenerator struct {
-	s string
-}
+type mockGenerator struct{}
 
 func (m mockGenerator) GetSTSToken() (string, error) {
-	return m.s, nil
+	return "test", nil
 }
 
 // NewGenerator returns a mock token generator.
-func NewGenerator(t *testing.T) token.Generator {
-	return &mockGenerator{s: "test"}
+func NewGenerator() token.Generator {
+	return &mockGenerator{}
 }

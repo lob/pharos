@@ -26,7 +26,7 @@ func TestDeleteCluster(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
-	tokenGenerator := test.NewGenerator(t)
+	tokenGenerator := test.NewGenerator()
 
 	t.Run("deletes cluster by ID successfully", func(tt *testing.T) {
 		c := NewClient(&config.Config{BaseURL: srv.URL}, tokenGenerator)
@@ -68,7 +68,7 @@ func TestListClusters(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
-	tokenGenerator := test.NewGenerator(t)
+	tokenGenerator := test.NewGenerator()
 
 	t.Run("lists clusters successfully", func(tt *testing.T) {
 		c := NewClient(&config.Config{BaseURL: srv.URL}, tokenGenerator)
@@ -102,7 +102,7 @@ func TestGetCluster(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
-	tokenGenerator := test.NewGenerator(t)
+	tokenGenerator := test.NewGenerator()
 
 	t.Run("retrieves cluster by ID successfully", func(tt *testing.T) {
 		c := NewClient(&config.Config{BaseURL: srv.URL}, tokenGenerator)
@@ -134,7 +134,7 @@ func TestUpdateCluster(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
-	tokenGenerator := test.NewGenerator(t)
+	tokenGenerator := test.NewGenerator()
 
 	t.Run("updates cluster by ID successfully", func(tt *testing.T) {
 		c := NewClient(&config.Config{BaseURL: srv.URL}, tokenGenerator)

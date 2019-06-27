@@ -30,7 +30,7 @@ func TestRunGet(t *testing.T) {
 			require.NoError(tt, err)
 		}))
 		defer srv.Close()
-		tokenGenerator := test.NewGenerator(t)
+		tokenGenerator := test.NewGenerator()
 
 		// Set BaseURL in config to be the url of the dummy server.
 		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
@@ -63,7 +63,7 @@ func TestRunGet(t *testing.T) {
 			require.NoError(tt, err)
 		}))
 		defer srv.Close()
-		tokenGenerator := test.NewGenerator(t)
+		tokenGenerator := test.NewGenerator()
 
 		// Set BaseURL in config to be the url of the dummy server.
 		client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)

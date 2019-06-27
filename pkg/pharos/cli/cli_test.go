@@ -95,7 +95,7 @@ func TestGetCluster(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
-	tokenGenerator := test.NewGenerator(t)
+	tokenGenerator := test.NewGenerator()
 
 	// Set BaseURL in config to be the url of the dummy server.
 	client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
@@ -306,7 +306,7 @@ func TestListClusters(t *testing.T) {
 		require.NoError(t, err)
 	}))
 	defer srv.Close()
-	tokenGenerator := test.NewGenerator(t)
+	tokenGenerator := test.NewGenerator()
 
 	// Set BaseURL in config to be the url of the dummy server.
 	client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
