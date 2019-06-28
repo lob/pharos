@@ -3,6 +3,7 @@ package binder
 import (
 	"io"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -59,6 +60,19 @@ func newContext(t *testing.T, method string, r io.Reader, ctype string) echo.Con
 	e := echo.New()
 	req := httptest.NewRequest(method, "/", r)
 	req.Header.Set(echo.HeaderContentType, ctype)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+
+	return c
+}
+
+// newQueryContext returns a new echo.Context to be used in binder query tests.
+func newQueryContext(t *testing.T, query string) echo.Context {
+	t.Helper()
+
+	e := echo.New()
+	req := httptest.NewRequest(echo.GET, "/", strings.NewReader(""))
+	req.URL = &url.URL{RawQuery: query}
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
