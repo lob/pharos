@@ -45,6 +45,10 @@ func (cb *customBinder) bind(i interface{}, c echo.Context) error {
 	return echo.ErrUnsupportedMediaType
 }
 
+// setField is a helper function that allows the binding of a map[string]string
+// object into a custom struct. It optionally allows for custom field names
+// using the `query:"<custom_name>"` tag. If the object doesn't contain the
+// field that the map is trying to reference it will reutrn an error.
 func setField(obj interface{}, name string, value interface{}) error {
 	structValue := reflect.ValueOf(obj).Elem()
 	structType := reflect.TypeOf(obj).Elem()
