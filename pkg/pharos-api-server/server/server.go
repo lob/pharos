@@ -10,7 +10,6 @@ import (
 	logger "github.com/lob/logger-go"
 	metrics "github.com/lob/metrics-go"
 	"github.com/lob/pharos/pkg/pharos-api-server/application"
-	"github.com/lob/pharos/pkg/pharos-api-server/authentication"
 	"github.com/lob/pharos/pkg/pharos-api-server/binder"
 	"github.com/lob/pharos/pkg/pharos-api-server/clusters"
 	"github.com/lob/pharos/pkg/pharos-api-server/health"
@@ -35,8 +34,6 @@ func New(app application.App) *http.Server {
 		Reporter:                  &app.Sentry,
 		EnableCustomErrorMessages: true,
 	})
-
-	e.Use(authentication.Middleware(app.TokenVerifier))
 
 	health.RegisterRoutes(e)
 	clusters.RegisterRoutes(e, app)

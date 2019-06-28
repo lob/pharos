@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strings"
 )
 
 // Config contains the environment specific configuration values needed by the
@@ -16,9 +17,18 @@ type Config struct {
 	Environment      string
 	Hostname         string
 	Port             int
+	Permissions      *Permissions
 	SentryDSN        string
 	StatsdHost       string
 	StatsdPort       int
+}
+
+// Permissions contains lists of AWS IAM ARNs that are to be associated with
+// each of the 3 valid permission groups.
+type Permissions struct {
+	Admin []string
+	Read  []string
+	Robot []string
 }
 
 const env = "ENVIRONMENT"
@@ -38,6 +48,7 @@ func New() Config {
 		DatabaseUser:     os.Getenv("DATABASE_USER"),
 		DatabasePassword: os.Getenv("DATABASE_PASSWORD"),
 		DatabaseSSLMode:  true,
+		Permissions:      &Permissions{},
 	}
 
 	switch os.Getenv(env) {
@@ -51,6 +62,27 @@ func New() Config {
 		cfg.DatabaseName = "pharos_test"
 		cfg.DatabaseUser = "pharos_admin"
 		cfg.DatabaseSSLMode = false
+	}
+
+	// Load admin IAM roles
+	if adminRoles := os.Getenv("ADMIN_ACCESS_ROLES"); adminRoles != "" {
+		cfg.Permissions.Admin = strings.Split(adminRoles, ",")
+	}
+
+	// Load read IAM roles
+	if readRoles := os.Getenv("READ_ACCESS_ROLES"); readRoles != "" {
+		// As admins are allowed to perform any action we append their roles to the
+		// Read list of ARNs to prevent having to add both the Read and Admin roles
+		// everywhere. There is no issue with a role appearing twice in this list.
+		cfg.Permissions.Read = append(strings.Split(readRoles, ","), cfg.Permissions.Admin...)
+	}
+
+	// Load machine IAM roles
+	if robotRoles := os.Getenv("ROBOT_ACCESS_ROLES"); robotRoles != "" {
+		// As admins are allowed to perform any action we append their roles to the
+		// Robot list of ARNs to prevent having to add both the Robot and Admin roles
+		// everywhere. There is no issue with a role appearing twice in this list.
+		cfg.Permissions.Robot = append(strings.Split(robotRoles, ","), cfg.Permissions.Admin...)
 	}
 
 	return cfg

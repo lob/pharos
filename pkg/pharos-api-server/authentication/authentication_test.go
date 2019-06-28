@@ -22,7 +22,6 @@ func (m mockVerifier) Verify(token string) (*token.Identity, error) {
 }
 
 func TestMiddleware(t *testing.T) {
-
 	t.Run("successfully authenticates request and sets auth in context", func(tt *testing.T) {
 		successVerifier := mockVerifier{
 			Identity: &token.Identity{
