@@ -16,6 +16,6 @@ func RegisterRoutes(e *echo.Echo, app application.App) {
 	e.GET("/clusters", h.list, authentication.Middleware(app.TokenVerifier), authorization.Middleware(config.Permissions.Read))
 	e.GET("/clusters/:id", h.retrieve, authentication.Middleware(app.TokenVerifier), authorization.Middleware(config.Permissions.Read))
 	e.DELETE("/clusters/:id", h.delete, authentication.Middleware(app.TokenVerifier), authorization.Middleware(config.Permissions.Admin))
-	e.POST("/clusters", h.create, authentication.Middleware(app.TokenVerifier), authorization.Middleware(config.Permissions.Robot))
+	e.POST("/clusters", h.create, authentication.Middleware(app.TokenVerifier), authorization.Middleware(config.Permissions.Write))
 	e.POST("/clusters/:id", h.update, authentication.Middleware(app.TokenVerifier), authorization.Middleware(config.Permissions.Admin))
 }

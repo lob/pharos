@@ -28,7 +28,7 @@ type Config struct {
 type Permissions struct {
 	Admin []string
 	Read  []string
-	Robot []string
+	Write []string
 }
 
 const env = "ENVIRONMENT"
@@ -77,12 +77,12 @@ func New() Config {
 		cfg.Permissions.Read = append(strings.Split(readRoles, ","), cfg.Permissions.Admin...)
 	}
 
-	// Load machine IAM roles
-	if robotRoles := os.Getenv("ROBOT_ACCESS_ROLES"); robotRoles != "" {
+	// Load write IAM roles
+	if writeRoles := os.Getenv("WRITE_ACCESS_ROLES"); writeRoles != "" {
 		// As admins are allowed to perform any action we append their roles to the
-		// Robot list of ARNs to prevent having to add both the Robot and Admin roles
+		// Write list of ARNs to prevent having to add both the Write and Admin roles
 		// everywhere. There is no issue with a role appearing twice in this list.
-		cfg.Permissions.Robot = append(strings.Split(robotRoles, ","), cfg.Permissions.Admin...)
+		cfg.Permissions.Write = append(strings.Split(writeRoles, ","), cfg.Permissions.Admin...)
 	}
 
 	return cfg
