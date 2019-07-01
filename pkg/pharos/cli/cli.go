@@ -128,9 +128,7 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 	return nil
 }
 
-// ListClusters retrieves all clusters and returns a formatted string
-// of all clusters. If given an environment, ListClusters will only retrieve
-// the clusters for that environment.
+// ListClusters retrieves clusters and returns a formatted string of clusters.
 func ListClusters(env string, inactive bool, client *api.Client) (string, error) {
 	query := make(map[string]string)
 	// If inactive is false, we'll only list active clusters, otherwise we'll list
@@ -193,4 +191,81 @@ func SwitchCluster(kubeConfigFile string, context string) error {
 	}
 
 	return clientcmd.WriteToFile(*kubeConfig, kubeConfigFile)
+}
+
+// SyncClusters gets information from clusters and merges it into a kubeconfig file.
+func SyncClusters(kubeConfigFile string, inactive bool, dryRun bool, overwrite bool, client *api.Client) error {
+	var kubeConfig *clientcmdapi.Config
+	var err error
+
+	if !overwrite {
+		// Check whether given kubeconfig file already exists. If it does not, create a new kubeconfig
+		// file in the specified file location. Return an error only if file is malformed, but not
+		// if it is empty or missing.
+		kubeConfig, err = configFromFile(kubeConfigFile)
+		if err != nil && !os.IsNotExist(err) {
+			return errors.Wrap(err, "unable to load kubeconfig file")
+		}
+	}
+	// If overwrite is set to true, start with new kubeconfig file regardless.
+	if kubeConfig == nil {
+		kubeConfig = clientcmdapi.NewConfig()
+	}
+
+	// If inactive is false, we'll only sync active clusters, otherwise we'll
+	// sync all clusters, including inactive ones.
+	query := make(map[string]string)
+	if !inactive {
+		query["active"] = "true"
+	}
+
+	clusters, err := client.ListClusters(query)
+	if err != nil {
+		return err
+	}
+
+	// Add cluster, context, and user for each cluster. There should never be
+	// more than one cluster marked active for each environment.
+	for _, cluster := range clusters {
+		clusterID := cluster.ID
+		env := cluster.Environment
+		username := fmt.Sprintf("iam-%s", clusterID)
+		kubeConfig.Clusters[clusterID] = newCluster(cluster)
+		kubeConfig.AuthInfos[username] = newUser(clusterID, env)
+		context := newContext(clusterID, username)
+		kubeConfig.Contexts[clusterID] = context
+
+		if cluster.Active {
+			kubeConfig.Contexts[env] = context
+		}
+	}
+
+	// Check for errors in newly created config.
+	err = clientcmd.Validate(*kubeConfig)
+	if err != nil {
+		return errors.Wrap(err, "unable to create valid kubeconfig")
+	}
+
+	// Print kubeconfig to terminal instead of saving to file during a dry run.
+	if dryRun {
+		yaml, err := clientcmd.Write(*kubeConfig)
+		if err != nil {
+			return errors.Wrap(err, "unable to write kubeconfig file")
+		}
+		fmt.Println(string(yaml))
+		return nil
+	}
+
+	err = clientcmd.WriteToFile(*kubeConfig, kubeConfigFile)
+	if err != nil {
+		return err
+	}
+
+	// Write success message.
+	verb := "MERGED"
+	if overwrite {
+		verb = "OVERWROTE"
+	}
+	fmt.Printf("%s SYNCED AND %s %d CLUSTERS INTO %s\n", color.GreenString("SUCCESS:"), verb, len(clusters), kubeConfigFile)
+	return nil
 }

@@ -398,3 +398,254 @@ func TestSwitchCluster(t *testing.T) {
 		assert.Contains(tt, err.Error(), "no such file or directory")
 	})
 }
+
+func TestSyncClusters(t *testing.T) {
+	// Set up dummy server for testing.
+	syncInactiveResponse := []byte(`[{
+		"id":                     "sandbox-333333",
+		"environment":            "sandbox",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 false
+	}, {
+		"id":                     "sandbox-444444",
+		"environment":            "sandbox",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	}, {
+		"id":                     "core-111111",
+		"environment":            "core",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.com",
+		"object":                 "cluster",
+		"active":                 true
+	}, {
+		"id":                     "staging-555555",
+		"environment":            "staging",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 false
+	}, {
+		"id":                     "staging-666666",
+		"environment":            "staging",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	}]`)
+	syncResponse := []byte(`[{
+		"id":                     "sandbox-444444",
+		"environment":            "sandbox",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	}, {
+		"id":                     "core-111111",
+		"environment":            "core",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.com",
+		"object":                 "cluster",
+		"active":                 true
+	}, {
+		"id":                     "staging-666666",
+		"environment":            "staging",
+		"cluster_authority_data": "LS0tLS1CRUdJTiBDR...",
+		"server_url":             "https://test.elb.us-west-2.amazonaws.com:6443",
+		"object":                 "cluster",
+		"active":                 true
+	}]`)
+
+	srv := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		var response []byte
+		switch r.URL.String() {
+		case "/clusters?active=true":
+			response = syncResponse
+		case "/clusters":
+			response = syncInactiveResponse
+		}
+		_, err := rw.Write(response)
+		require.NoError(t, err)
+	}))
+	defer srv.Close()
+	tokenGenerator := test.NewGenerator()
+
+	// Set BaseURL in config to be the url of the dummy server.
+	client := api.NewClient(&configpkg.Config{BaseURL: srv.URL}, tokenGenerator)
+
+	t.Run("successfully merges kubeconfig file from syncing clusters into existing kubeconfig", func(tt *testing.T) {
+		// Create temporary test config file and defer cleanup.
+		configFile := test.CopyTestFile(tt, "../testdata", "sync", config)
+		defer os.Remove(configFile)
+
+		// Sync clusters, including inactive ones.
+		err := SyncClusters(configFile, true, false, false, client)
+		assert.NoError(tt, err)
+
+		// Load kubeconfig file for testing.
+		kubeConfig, err := configFromFile(configFile)
+		assert.NoError(tt, err)
+
+		// Load old kubeconfig file for comparison.
+		oldKubeConfig, err := configFromFile(config)
+		assert.NoError(tt, err)
+
+		// Check that context for sandbox has been updated.
+		context, ok := kubeConfig.Contexts["sandbox"]
+		assert.True(tt, ok)
+		assert.Equal(tt, context.Cluster, "sandbox-444444")
+		assert.Equal(tt, context.AuthInfo, "iam-sandbox-444444")
+
+		// Check that context for the sandbox cluster exists in the file.
+		context, ok = kubeConfig.Contexts["sandbox-333333"]
+		assert.True(tt, ok)
+		assert.Equal(tt, context.Cluster, "sandbox-333333")
+		assert.Equal(tt, context.AuthInfo, "iam-sandbox-333333")
+
+		// Check that contexts for other clusters were added.
+		_, ok = kubeConfig.Contexts["core"]
+		assert.True(tt, ok)
+		_, ok = kubeConfig.Contexts["core-111111"]
+		assert.True(tt, ok)
+		context, ok = kubeConfig.Contexts["staging"]
+		assert.True(tt, ok)
+		assert.Equal(tt, context.Cluster, "staging-666666")
+		assert.Equal(tt, context.AuthInfo, "iam-staging-666666")
+		_, ok = kubeConfig.Contexts["staging-555555"]
+		assert.True(tt, ok)
+
+		// Check that new users were created for all new clusters.
+		_, ok = kubeConfig.AuthInfos["iam-sandbox-333333"]
+		assert.True(tt, ok)
+		_, ok = kubeConfig.AuthInfos["iam-sandbox-444444"]
+		assert.True(tt, ok)
+		_, ok = kubeConfig.AuthInfos["iam-core-111111"]
+		assert.True(tt, ok)
+		_, ok = kubeConfig.AuthInfos["iam-staging-555555"]
+		assert.True(tt, ok)
+
+		// Check that old clusters and contexts still exist in file.
+		_, ok = kubeConfig.Clusters["sandbox-111111"]
+		assert.True(tt, ok)
+		_, ok = kubeConfig.Contexts["sandbox-111111"]
+		assert.True(tt, ok)
+
+		// Check that current context has not been modified.
+		assert.Equal(tt, kubeConfig.CurrentContext, oldKubeConfig.CurrentContext)
+	})
+
+	t.Run("successfully overwrites existing kubeconfig using when --overwrite flag is set to true", func(tt *testing.T) {
+		// Create temporary test config file and defer cleanup.
+		configFile := test.CopyTestFile(tt, "../testdata", "sync", config)
+		defer os.Remove(configFile)
+
+		// Sync clusters, including inactive ones.
+		err := SyncClusters(configFile, true, false, true, client)
+		assert.NoError(tt, err)
+
+		// Load kubeconfig file for testing.
+		kubeConfig, err := configFromFile(configFile)
+		assert.NoError(tt, err)
+
+		// Check that context for sandbox has been updated.
+		context, ok := kubeConfig.Contexts["sandbox"]
+		assert.True(tt, ok)
+		assert.Equal(tt, context.Cluster, "sandbox-444444")
+		assert.Equal(tt, context.AuthInfo, "iam-sandbox-444444")
+
+		// Check that contextx and clusters for old clusters no longer exist in the file.
+		_, ok = kubeConfig.Clusters["sandbox-111111"]
+		assert.False(tt, ok)
+		_, ok = kubeConfig.Contexts["sandbox-111111"]
+		assert.False(tt, ok)
+	})
+
+	t.Run("successfully creates new kubeconfig file from syncing clusters", func(tt *testing.T) {
+		// Create temporary test config file and defer cleanup.
+		nonExistentConfig := "../testdata/nonexistentFile"
+		defer os.Remove(nonExistentConfig)
+
+		// Sync clusters, including inactive ones.
+		err := SyncClusters(nonExistentConfig, true, false, false, client)
+		assert.NoError(tt, err)
+
+		// Load kubeconfig file for testing.
+		kubeConfig, err := configFromFile(nonExistentConfig)
+		assert.NoError(tt, err)
+
+		// Check that contexts for clusters were added.
+		_, ok := kubeConfig.Contexts["core"]
+		assert.True(tt, ok)
+		_, ok = kubeConfig.Contexts["core-111111"]
+		assert.True(tt, ok)
+		context, ok := kubeConfig.Contexts["staging"]
+		assert.True(tt, ok)
+		assert.Equal(tt, context.Cluster, "staging-666666")
+		assert.Equal(tt, context.AuthInfo, "iam-staging-666666")
+		_, ok = kubeConfig.Contexts["staging-555555"]
+		assert.True(tt, ok)
+
+		// Check that new users were created for all new clusters.
+		_, ok = kubeConfig.AuthInfos["iam-sandbox-333333"]
+		assert.True(tt, ok)
+		_, ok = kubeConfig.AuthInfos["iam-sandbox-444444"]
+		assert.True(tt, ok)
+		_, ok = kubeConfig.AuthInfos["iam-core-111111"]
+		assert.True(tt, ok)
+		_, ok = kubeConfig.AuthInfos["iam-staging-666666"]
+		assert.True(tt, ok)
+	})
+
+	t.Run("successfully syncs only active clusters", func(tt *testing.T) {
+		// Create temporary test config file and defer cleanup.
+		configFile := test.CopyTestFile(tt, "../testdata", "sync", config)
+		defer os.Remove(configFile)
+
+		// Sync only active clusters.
+		err := SyncClusters(configFile, false, false, false, client)
+		assert.NoError(tt, err)
+
+		// Load kubeconfig file for testing.
+		kubeConfig, err := configFromFile(configFile)
+		assert.NoError(tt, err)
+
+		// Check that active clusters were added.
+		_, ok := kubeConfig.Clusters["sandbox-444444"]
+		assert.True(tt, ok)
+
+		// Check that there were no inactive clusters added.
+		_, ok = kubeConfig.Clusters["staging-555555"]
+		assert.False(tt, ok)
+	})
+
+	t.Run("takes no action when --dry-run flag is set", func(tt *testing.T) {
+		oldKubeConfig, err := configFromFile(config)
+		assert.NoError(tt, err)
+
+		// Run get cluster with dry-run.
+		err = SyncClusters(config, false, true, false, client)
+		assert.NoError(tt, err)
+
+		// Check that kubeconfig file has not been modified.
+		kubeConfig, err := configFromFile(config)
+		assert.NoError(tt, err)
+		assert.True(tt, reflect.DeepEqual(oldKubeConfig, kubeConfig))
+	})
+
+	t.Run("errors on merging with malformed kubeconfig file", func(tt *testing.T) {
+		err := SyncClusters(malformedConfig, false, true, false, client)
+		assert.Error(tt, err)
+		assert.Contains(tt, err.Error(), "unable to load kubeconfig file")
+	})
+
+	t.Run("errors related to retrieving cluster information from the pharos API", func(tt *testing.T) {
+		// Failed to list cluster.
+		err := SyncClusters(config, false, false, false, api.NewClient(&configpkg.Config{BaseURL: ""}, tokenGenerator))
+		assert.Error(tt, err)
+		assert.Contains(tt, err.Error(), "failed to list clusters")
+	})
+}

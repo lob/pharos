@@ -9,8 +9,12 @@ import (
 )
 
 // Declare some variables to be used as flags in various commands.
-var file string
-var pharosConfig string
+var (
+	file         string
+	dryRun       bool
+	pharosConfig string
+	inactive     bool
+)
 
 // rootCmd represents the base command when called without any subcommands.
 var rootCmd = &cobra.Command{
@@ -43,6 +47,7 @@ func init() {
 	clustersCmd.AddCommand(GetCmd)
 	clustersCmd.AddCommand(ListCmd)
 	clustersCmd.AddCommand(SwitchCmd)
+	clustersCmd.AddCommand(SyncCmd)
 	clustersCmd.AddCommand(UpdateCmd)
 }
 
