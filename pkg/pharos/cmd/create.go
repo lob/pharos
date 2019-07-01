@@ -32,7 +32,7 @@ var CreateCmd = &cobra.Command{
 }
 
 func runCreate(id string, env string, authorityData string, server string, client *api.Client) error {
-	newCluster := api.NewCluster{
+	newCluster := api.Cluster{
 		ID:                   id,
 		Environment:          env,
 		ClusterAuthorityData: authorityData,

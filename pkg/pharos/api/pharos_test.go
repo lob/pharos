@@ -28,7 +28,7 @@ func TestCreateCluster(t *testing.T) {
 	defer srv.Close()
 	tokenGenerator := test.NewGenerator()
 
-	newCluster := NewCluster{
+	newCluster := Cluster{
 		ID:                   "production-pikachu",
 		Environment:          "production",
 		ClusterAuthorityData: "asdasd",
