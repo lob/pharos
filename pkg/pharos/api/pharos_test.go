@@ -12,7 +12,7 @@ import (
 )
 
 func TestCreateCluster(t *testing.T) {
-	var testResponse = []byte(`{
+	testResponse := []byte(`{
 		"id":                     "production-pikachu",
 		"environment":            "production",
 		"server_url":             "https://prod.elb.us-west-2.amazonaws.com:6443",
@@ -28,9 +28,16 @@ func TestCreateCluster(t *testing.T) {
 	defer srv.Close()
 	tokenGenerator := test.NewGenerator()
 
+	newCluster := NewCluster{
+		ID:                   "production-pikachu",
+		Environment:          "production",
+		ClusterAuthorityData: "asdasd",
+		ServerURL:            "https://prod.elb.us-west-2.amazonaws.com:6443",
+	}
+
 	t.Run("creates cluster successfully", func(tt *testing.T) {
 		c := NewClient(&config.Config{BaseURL: srv.URL}, tokenGenerator)
-		cluster, err := c.CreateCluster("production-pikachu", "production", "asdasd", "https://prod.elb.us-west-2.amazonaws.com:6443")
+		cluster, err := c.CreateCluster(newCluster)
 		assert.NoError(tt, err)
 		assert.Equal(tt, "production-pikachu", cluster.ID)
 		assert.Equal(tt, false, cluster.Deleted)
@@ -38,7 +45,7 @@ func TestCreateCluster(t *testing.T) {
 
 	t.Run("fails to create cluster using a bad client", func(tt *testing.T) {
 		c := NewClient(&config.Config{BaseURL: ""}, tokenGenerator)
-		cluster, err := c.CreateCluster("production-pikachu", "production", "asdasd", "https://prod.elb.us-west-2.amazonaws.com:6443")
+		cluster, err := c.CreateCluster(newCluster)
 		assert.Error(tt, err)
 		assert.Equal(tt, "", cluster.ID)
 	})
