@@ -195,10 +195,9 @@ func SwitchCluster(kubeConfigFile string, context string) error {
 
 // SyncClusters gets information from clusters and merges it into a kubeconfig file.
 func SyncClusters(kubeConfigFile string, inactive bool, dryRun bool, overwrite bool, client *api.Client) error {
-	var (
-		kubeConfig *clientcmdapi.Config
-		err        error
-	)
+	var kubeConfig *clientcmdapi.Config
+	var err error
+
 	if !overwrite {
 		// Check whether given kubeconfig file already exists. If it does not, create a new kubeconfig
 		// file in the specified file location. Return an error only if file is malformed, but not
