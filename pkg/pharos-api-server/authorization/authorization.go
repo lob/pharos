@@ -8,7 +8,8 @@ import (
 )
 
 // Middleware attaches an authorization middleware that authenticates a request
-// against the authenticated used from the authentication middleware.  attaches a token.Identity struct to the request if properly authenticated.
+// against the authenticated user from the authentication middleware. Attaches a
+// token.Identity struct to the request if properly authenticated.
 func Middleware(allowedARNs []string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
