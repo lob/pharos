@@ -8,6 +8,14 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Cluster describes a new cluster to be created in Pharos.
+type Cluster struct {
+	ID                   string `json:"id"`
+	Environment          string `json:"environment"`
+	ServerURL            string `json:"server_url"`
+	ClusterAuthorityData string `json:"cluster_authority_data"`
+}
+
 // DeleteCluster sends a DELETE request to the clusters endpoint of the Pharos API
 // and returns a Cluster containing the deleted cluster.
 func (c *Client) DeleteCluster(clusterID string) (model.Cluster, error) {
@@ -31,6 +39,19 @@ func (c *Client) ListClusters(query map[string]string) ([]model.Cluster, error) 
 	}
 
 	return clusters, nil
+}
+
+// CreateCluster sends a POST request to the clusters endpoint of the Pharos API
+// and returns the Cluster that was created.
+func (c *Client) CreateCluster(newCluster Cluster) (model.Cluster, error) {
+	var cluster model.Cluster
+
+	err := c.send(http.MethodPost, "clusters", nil, newCluster, &cluster)
+	if err != nil {
+		return cluster, errors.Wrap(err, "failed to create cluster")
+	}
+
+	return cluster, nil
 }
 
 // GetCluster sends a GET request to the clusters/id endpoint of the Pharos API

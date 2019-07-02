@@ -124,7 +124,7 @@ func GetCluster(id string, kubeConfigFile string, dryRun bool, client *api.Clien
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%s %s MERGED INTO %s\n", color.GreenString("SUCCESS:"), id, kubeConfigFile)
+	fmt.Printf("%s MERGED CLUSTER %s INTO %s\n", color.GreenString("SUCCESS:"), id, kubeConfigFile)
 	return nil
 }
 
