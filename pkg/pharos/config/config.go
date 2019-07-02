@@ -20,6 +20,7 @@ type Config struct {
 
 const (
 	directoryPermissions = 0700
+	filePermissions      = 0644
 )
 
 // New creates a new Config reference at the given file path.
@@ -50,4 +51,24 @@ func (c *Config) Load() error {
 	}
 
 	return json.Unmarshal(raw, c)
+}
+
+// Save saves data from the Config struct into the config file.
+func (c *Config) Save() error {
+	path := filepath.Dir(c.filePath)
+	err := os.MkdirAll(path, directoryPermissions)
+	if err != nil {
+		return err
+	}
+
+	raw, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(c.filePath, raw, filePermissions)
+	if err != nil {
+		return err
+	}
+	return nil
 }

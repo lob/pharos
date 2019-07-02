@@ -21,12 +21,16 @@ var (
 var rootCmd = &cobra.Command{
 	Use:     "pharos",
 	Short:   "A tool for managing kubeconfig files.",
-	Long:    `Pharos is a tool for cluster discovery and distribution of kubeconfig files.`,
+	Long:    "Pharos is a tool for cluster discovery and distribution of kubeconfig files.",
 	Version: "1.0",
 }
 
 // clustersCmd is the pharos clusters command.
-var clustersCmd = &cobra.Command{Use: "clusters"}
+var clustersCmd = &cobra.Command{
+	Use:   "clusters",
+	Short: "Commands for cluster management (run \"pharos clusters -h\" for a full list of cluster commands)",
+	Long:  "Commands for managing cluster kubeconfig files.",
+}
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -43,6 +47,7 @@ func init() {
 
 	// Add child commands.
 	rootCmd.AddCommand(clustersCmd)
+	rootCmd.AddCommand(setupCmd)
 	clustersCmd.AddCommand(CreateCmd)
 	clustersCmd.AddCommand(CurrentCmd)
 	clustersCmd.AddCommand(DeleteCmd)

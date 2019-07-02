@@ -8,6 +8,7 @@ import (
 
 // Declare some constants to be used in testing functions used in various commands.
 const (
+	cliConfig       = "../testdata/pharosConfig"
 	config          = "../testdata/config"
 	malformedConfig = "../testdata/malformed"
 	emptyConfig     = "../testdata/empty"
