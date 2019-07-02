@@ -7,7 +7,6 @@ functional. 🚨
 Pharos is an open-source Kubernetes cluster discovery and configuration distribution tool designed
 to work nicely with [aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator).
 
-
 ## Testing Locally
 Build the Pharos API server and Pharos CLI:
 ```

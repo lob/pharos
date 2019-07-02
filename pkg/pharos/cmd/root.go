@@ -22,7 +22,7 @@ var rootCmd = &cobra.Command{
 	Use:     "pharos",
 	Short:   "A tool for managing kubeconfig files.",
 	Long:    "Pharos is a tool for cluster discovery and distribution of kubeconfig files.",
-	Version: "1.0",
+	Version: "1.0.0",
 }
 
 // clustersCmd is the pharos clusters command.
@@ -39,8 +39,8 @@ func Execute() error {
 }
 
 func init() {
-	rootCmd.Flags().BoolP("version", "v", false, "print pharos version number")
-	rootCmd.PersistentFlags().StringVarP(&pharosConfig, "config", "c", fmt.Sprintf("%s/.kube/pharos/config", os.Getenv("HOME")), "pharos config file")
+	rootCmd.Flags().BoolP("version", "v", false, "print Pharos version number")
+	rootCmd.PersistentFlags().StringVarP(&pharosConfig, "config", "c", fmt.Sprintf("%s/.kube/pharos/config", os.Getenv("HOME")), "Pharos config file")
 
 	// Prevent usage message from being printed out upon command error.
 	rootCmd.SilenceUsage = true

@@ -1,6 +1,7 @@
 BIN_DIR         ?= ./bin
 PKG_SERVER_NAME ?= pharos-api-server
 PKG_CLI_NAME    ?= pharos
+VERSION         ?= v1.0.0
 
 COVERAGE_PROFILE ?= coverage.out
 
@@ -88,3 +89,10 @@ start:
 test:
 	@echo "---> Testing"
 	ENVIRONMENT=test go test ./pkg/... -race -coverprofile $(COVERAGE_PROFILE)
+
+.PHONY: release
+release:
+	@echo "---> Creating tagged release"
+	git tag $(VERSION)
+	git push origin
+	git push origin --tags
