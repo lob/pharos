@@ -28,7 +28,7 @@ var rootCmd = &cobra.Command{
 // clustersCmd is the pharos clusters command.
 var clustersCmd = &cobra.Command{
 	Use:   "clusters",
-	Short: "Commands for cluster management (run \"pharos clusters -h\" for a full list of cluster commands)",
+	Short: `Commands for cluster management (run "pharos clusters -h" for a full list of cluster commands)`,
 	Long:  "Commands for managing cluster kubeconfig files.",
 }
 

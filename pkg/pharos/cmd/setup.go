@@ -10,9 +10,11 @@ import (
 )
 
 // Declare variables to be used as flags.
-var awsProfile string
-var awsRoleARN string
-var pharosURL string
+var (
+	awsProfile string
+	awsRoleARN string
+	pharosURL  string
+)
 
 // setupCmd is the pharos setup command.
 var setupCmd = &cobra.Command{
@@ -24,7 +26,7 @@ var setupCmd = &cobra.Command{
 	},
 }
 
-func runSetup(pharosConfig string, url string, profile string, arn string) error {
+func runSetup(pharosConfig, url, profile, arn string) error {
 	c, err := configpkg.New(pharosConfig)
 	if err != nil {
 		return errors.Wrap(err, "unable to create reference to config file")
@@ -51,5 +53,5 @@ func runSetup(pharosConfig string, url string, profile string, arn string) error
 func init() {
 	setupCmd.Flags().StringVarP(&awsProfile, "aws-profile", "p", "", "specify aws profile to use")
 	setupCmd.Flags().StringVarP(&awsRoleARN, "aws-role-arn", "r", "", "specify aws role ARN to use")
-	setupCmd.Flags().StringVarP(&pharosURL, "pharos-url", "u", "", "specify URL of the pharos server")
+	setupCmd.Flags().StringVarP(&pharosURL, "pharos-url", "u", "", "specify URL of the Pharos server")
 }
