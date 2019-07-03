@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/lob/pharos/internal/test"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -58,5 +59,30 @@ func TestLoad(t *testing.T) {
 		err = c.Load()
 		assert.Error(tt, err)
 		assert.Contains(tt, err.Error(), "pharos hasn't been configured yet")
+	})
+}
+
+func TestSave(t *testing.T) {
+	t.Run("successfully saves to empty config", func(tt *testing.T) {
+		// Create temporary empty test config file and defer cleanup.
+		emptyConfigFile := test.CopyTestFile(tt, "../testdata", "config", empty)
+		defer os.Remove(emptyConfigFile)
+
+		// Create config reference to empty file.
+		c, err := New(emptyConfigFile)
+		assert.NoError(tt, err)
+		assert.Equal(tt, emptyConfigFile, c.filePath)
+
+		// Edit config and save it to file.
+		c.AWSProfile = "egg"
+		err = c.Save()
+		assert.NoError(tt, err)
+
+		// Check to see if file was saved successfully.
+		c1, err := New(emptyConfigFile)
+		assert.NoError(tt, err)
+		err = c1.Load()
+		assert.NoError(tt, err)
+		assert.Equal(tt, "egg", c1.AWSProfile)
 	})
 }
