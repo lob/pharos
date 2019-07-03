@@ -30,9 +30,15 @@ func runSetup(pharosConfig string, url string, profile string, arn string) error
 		return errors.Wrap(err, "unable to create reference to config file")
 	}
 
-	c.BaseURL = url
-	c.AWSProfile = profile
-	c.AssumeRoleARN = arn
+	if c.BaseUrl != "" {
+		c.BaseURL = url
+	}
+	if c.AWSProfile != "" {
+		c.AWSProfile = profile
+	}
+	if c.AssumeRoleARN != "" {
+		c.AssumeRoleARN = arn
+	}
 
 	err = c.Save()
 	if err != nil {
