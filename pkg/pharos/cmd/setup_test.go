@@ -28,5 +28,18 @@ func TestRunSetup(t *testing.T) {
 		assert.Equal(tt, "egg", c.BaseURL)
 		assert.Equal(tt, "hello", c.AWSProfile)
 		assert.Equal(tt, "", c.AssumeRoleARN)
+
+		// Check that setup doesn't overwrite file.
+		err = runSetup(configFile, "", "blah", "test")
+		assert.NoError(tt, err)
+
+		c, err = configpkg.New(configFile)
+		assert.NoError(tt, err)
+		err = c.Load()
+		assert.NoError(tt, err)
+
+		assert.Equal(tt, "egg", c.BaseURL)
+		assert.Equal(tt, "blah", c.AWSProfile)
+		assert.Equal(tt, "test", c.AssumeRoleARN)
 	})
 }

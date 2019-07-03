@@ -32,6 +32,13 @@ func runSetup(pharosConfig, url, profile, arn string) error {
 		return errors.Wrap(err, "unable to create reference to config file")
 	}
 
+	// Load old config file to prevent overwrites. If this errors, config file
+	// has not yet been configured.
+	err = c.Load()
+	if err != nil {
+		fmt.Println("CREATING PHAROS CONFIG FILE...")
+	}
+
 	if url != "" {
 		c.BaseURL = url
 	}
