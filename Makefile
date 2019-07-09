@@ -1,7 +1,8 @@
 BIN_DIR         ?= ./bin
 PKG_SERVER_NAME ?= pharos-api-server
 PKG_CLI_NAME    ?= pharos
-VERSION         ?= v1.0.0
+LDFLAGS         ?= "-X github.com/lob/pharos/pkg/pharos/cmd.pharosVersion=$(VERSION)"
+VERSION         ?=
 
 COVERAGE_PROFILE ?= coverage.out
 
@@ -22,7 +23,7 @@ default: build
 build:
 	@echo "---> Building"
 	go build -o $(BIN_DIR)/$(PKG_SERVER_NAME) ./cmd/pharos-api-server
-	go build -o $(BIN_DIR)/$(PKG_CLI_NAME) ./cmd/pharos
+	go build -o $(BIN_DIR)/$(PKG_CLI_NAME) -ldflags $(LDFLAGS) ./cmd/pharos
 
 .PHONY: clean
 clean:
