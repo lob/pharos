@@ -1,20 +1,22 @@
+project_name: pharos
 builds:
 - id: "pharos"
-  main: cmd/pharos/main.go
+  main: ./cmd/pharos
   binary: bin/pharos
-- id: "pharos-api-server"
-  main: cmd/pharos-api-server/main.go
-  binary: bin/pharos-api-server
+  goarch:
+    - amd64
+  goos:
+    - linux
+    - darwin
+  ldflags:
+    -X github.com/emilyzhang/pharos/pkg/pharos/cmd.pharosVersion={{.Version}}
 archives:
 - id: "pharos"
   builds:
     - "pharos"
-    - "pharos-api-server"
   replacements:
     amd64: 64-bit
-    386: 32-bit
     darwin: macOS
-  format: zip
   files:
     - LICENSE
 checksum:

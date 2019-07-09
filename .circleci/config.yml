@@ -51,13 +51,26 @@ jobs:
           path: coverage.out
   release:
     docker:
-      - image: circleci/golang:1.10
+      - image: circleci/golang:1.12.5
+    working_directory: /go/src/github.com/lob/pharos
     steps:
       - checkout
       - run:
+          name: Install dependencies
+          command: make install
+      - run:
           name: Run goreleaser
           command: curl -sL https://git.io/goreleaser | bash
-    filters:
+
+workflows:
+  version: 2
+  build:
+    jobs:
+    - build
+  release:
+    jobs:
+    - release:
+        filters:
           branches:
             ignore: /.*/
           tags:

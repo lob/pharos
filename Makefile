@@ -95,5 +95,7 @@ test:
 release:
 	@echo "---> Creating tagged release"
 	git tag $(VERSION)
+	# Check that the commit is tagged and starts with "v".
+	[[ $$(git tag -l --points-at HEAD) == v* ]]
 	git push origin
 	git push origin --tags
