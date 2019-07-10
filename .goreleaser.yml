@@ -2,14 +2,14 @@ project_name: pharos
 builds:
 - id: "pharos"
   main: ./cmd/pharos
-  binary: bin/pharos
+  binary: pharos
   goarch:
     - amd64
   goos:
     - linux
     - darwin
   ldflags:
-    -X github.com/emilyzhang/pharos/pkg/pharos/cmd.pharosVersion={{.Version}}
+    -X github.com/lob/pharos/pkg/pharos/cmd.pharosVersion={{.Version}}
 archives:
 - id: "pharos"
   builds:
@@ -33,12 +33,25 @@ brews:
     system "#{bin}/pharos --version"
   install: |
     bin.install "pharos"
+dockers:
+- goos: linux
+  goarch: amd64
+  image_templates:
+  - "lobcom/pharos:latest"
+  - "lobcom/pharos:{{ .Tag }}"
+  dockerfile: Dockerfile
+  extra_files:
+  - Gopkg.lock
+  - Gopkg.toml
+  - .dockerignore
+  - cmd
+  - internal
+  - pkg
 checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ .Tag }}-snapshot"
 changelog:
-  sort: asc
   filters:
     exclude:
     - '^docs:'

@@ -8,7 +8,7 @@ jobs:
           POSTGRES_USER: pharos_admin
           POSTGRES_DB: pharos_test
     environment:
-      - ENVIRONMENT: "test"
+      ENVIRONMENT: "test"
     working_directory: /go/src/github.com/lob/pharos
     steps:
       - restore_cache:
@@ -53,8 +53,14 @@ jobs:
     docker:
       - image: circleci/golang:1.12.5
     working_directory: /go/src/github.com/lob/pharos
+    environment:
+      ENVIRONMENT: "production"
     steps:
       - checkout
+      - setup_remote_docker
+      - run:
+          name: Docker login
+          command: docker login -u="$DOCKER_USER" -p="$DOCKER_PASSWORD"
       - run:
           name: Install dependencies
           command: make install
