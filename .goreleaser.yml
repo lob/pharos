@@ -19,6 +19,20 @@ archives:
     darwin: macOS
   files:
     - LICENSE
+brews:
+- name: "pharos"
+  ids:
+  - "pharos"
+  github:
+    owner: lob
+    name: homebrew-internal
+  folder: Formula
+  homepage: "https://github.com/lob/pharos"
+  description: "CLI for discovery and distribution of kubeconfig files."
+  test: |
+    system "#{bin}/pharos --version"
+  install: |
+    bin.install "pharos"
 checksum:
   name_template: 'checksums.txt'
 snapshot:
