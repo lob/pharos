@@ -7,7 +7,8 @@ functional. 🚨
 Pharos is an open-source Kubernetes cluster discovery and configuration distribution tool designed
 to work nicely with [aws-iam-authenticator](https://github.com/kubernetes-sigs/aws-iam-authenticator).
 
-## Testing Locally
+## Development
+### Testing Locally
 Build the Pharos API server and Pharos CLI:
 ```
 make install
@@ -55,3 +56,12 @@ Example: `bin/pharos clusters get sandbox -c pkg/pharos/testdata/pharosConfig -f
 command will create a new kubeconfig file at `./test/test1` if it succeeds.
 
 Happy testing!
+
+### Making New Releases
+Navigate to `$GOPATH/src/github.com/lob/pharos`, make sure that you're on the master branch and
+up to date with the remote repository, and run
+```
+make release VERSION=<VERSION-TAG>
+```
+where VERSION-TAG is a string that begins with `v` followed by a version number following the
+[semantic versioning spec](https://semver.org/). An example would be `make release VERSION=v1.1.0`.
