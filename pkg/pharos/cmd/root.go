@@ -15,7 +15,7 @@ var (
 	file          string
 	inactive      bool
 	pharosConfig  string
-	pharosVersion string // pharosVersion is set by ldflags in the Makefile.
+	pharosVersion = "0.0.0" // pharosVersion can be overwritten by ldflags in the Makefile.
 )
 
 // rootCmd represents the base command when called without any subcommands.
