@@ -94,6 +94,9 @@ test:
 .PHONY: release
 release:
 	@echo "---> Creating tagged release"
+ifndef VERSION
+	$(error VERSION must be specified)
+endif
 	git tag $(VERSION)
 	# Check that the commit is tagged and starts with "v".
 	[[ $$(git tag -l --points-at HEAD) == v* ]]
