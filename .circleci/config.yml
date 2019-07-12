@@ -8,7 +8,7 @@ jobs:
           POSTGRES_USER: pharos_admin
           POSTGRES_DB: pharos_test
     environment:
-      - ENVIRONMENT: "test"
+      ENVIRONMENT: "test"
     working_directory: /go/src/github.com/lob/pharos
     steps:
       - restore_cache:
@@ -49,6 +49,36 @@ jobs:
           command: make enforce
       - store_artifacts:
           path: coverage.out
+  release:
+    docker:
+      - image: circleci/golang:1.12.5
+    working_directory: /go/src/github.com/lob/pharos
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Docker login
+          command: echo $DOCKER_PASSWORD | docker login -u="$DOCKER_USER" --password-stdin
+      - run:
+          name: Install dependencies
+          command: make install
+      - run:
+          name: Run goreleaser
+          command: curl -sL https://git.io/goreleaser | bash
+
+workflows:
+  version: 2
+  build_and_release:
+    jobs:
+      - build
+      - release:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
 
 experimental:
   notify:

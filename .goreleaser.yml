@@ -1,0 +1,58 @@
+project_name: pharos
+builds:
+- id: "pharos"
+  main: ./cmd/pharos
+  binary: pharos
+  goarch:
+    - amd64
+  goos:
+    - linux
+    - darwin
+  ldflags:
+    -X github.com/lob/pharos/pkg/pharos/cmd.pharosVersion={{.Version}}
+archives:
+- id: "pharos"
+  builds:
+    - "pharos"
+  replacements:
+    amd64: 64-bit
+    darwin: macOS
+  files:
+    - LICENSE
+brews:
+- name: "pharos"
+  ids:
+  - "pharos"
+  github:
+    owner: lob
+    name: homebrew-internal
+  folder: Formula
+  homepage: "https://github.com/lob/pharos"
+  description: "CLI for discovery and distribution of kubeconfig files."
+  test: |
+    system "#{bin}/pharos --version"
+  install: |
+    bin.install "pharos"
+dockers:
+- goos: linux
+  goarch: amd64
+  image_templates:
+  - "lobcom/pharos:latest"
+  - "lobcom/pharos:{{ .Tag }}"
+  dockerfile: Dockerfile
+  extra_files:
+  - Gopkg.lock
+  - Gopkg.toml
+  - .dockerignore
+  - cmd
+  - internal
+  - pkg
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-snapshot"
+changelog:
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'

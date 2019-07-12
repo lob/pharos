@@ -1,6 +1,8 @@
 BIN_DIR         ?= ./bin
 PKG_SERVER_NAME ?= pharos-api-server
 PKG_CLI_NAME    ?= pharos
+LDFLAGS         ?= "-X github.com/lob/pharos/pkg/pharos/cmd.pharosVersion=$(VERSION)"
+VERSION         ?=
 
 COVERAGE_PROFILE ?= coverage.out
 
@@ -21,7 +23,7 @@ default: build
 build:
 	@echo "---> Building"
 	go build -o $(BIN_DIR)/$(PKG_SERVER_NAME) ./cmd/pharos-api-server
-	go build -o $(BIN_DIR)/$(PKG_CLI_NAME) ./cmd/pharos
+	go build -o $(BIN_DIR)/$(PKG_CLI_NAME) -ldflags $(LDFLAGS) ./cmd/pharos
 
 .PHONY: clean
 clean:
@@ -88,3 +90,15 @@ start:
 test:
 	@echo "---> Testing"
 	ENVIRONMENT=test go test ./pkg/... -race -coverprofile $(COVERAGE_PROFILE)
+
+.PHONY: release
+release:
+	@echo "---> Creating tagged release"
+ifndef VERSION
+	$(error VERSION must be specified)
+endif
+	git tag $(VERSION)
+	# Check that the commit is tagged and starts with "v".
+	[[ $$(git tag -l --points-at HEAD) == v* ]]
+	git push origin
+	git push origin --tags
