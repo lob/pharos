@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"encoding/base64"
+
 	"github.com/lob/pharos/pkg/util/model"
 	"k8s.io/client-go/tools/clientcmd"
 	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
@@ -51,8 +53,10 @@ func newUser(id string, environment string) *clientcmdapi.AuthInfo {
 // newCluster returns a pointer to a new clientcmdapi.Cluster containing
 // information from a cluster.
 func newCluster(c model.Cluster) *clientcmdapi.Cluster {
+	clusterAuthorityData, _ := base64.StdEncoding.DecodeString(c.ClusterAuthorityData)
+
 	cluster := clientcmdapi.NewCluster()
 	cluster.Server = c.ServerURL
-	cluster.CertificateAuthorityData = []byte(c.ClusterAuthorityData)
+	cluster.CertificateAuthorityData = clusterAuthorityData
 	return cluster
 }
