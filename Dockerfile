@@ -12,6 +12,7 @@ RUN dep ensure -vendor-only
 COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-w -s" -o ./bin/pharos-api-server ./cmd/pharos-api-server
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-w -s" -o ./bin/migrations ./cmd/migrations/*.go
 
 FROM alpine:3.8
 
@@ -28,6 +29,6 @@ RUN cd /tmp/rds-ca && awk '/-BEGIN CERTIFICATE-/{close(x); x=++i;}{print > "cert
     && rm -rf /tmp/rds-ca \
     && update-ca-certificates
 
-COPY --from=build /go/src/github.com/lob/pharos/bin/pharos-api-server .
+COPY --from=build /go/src/github.com/lob/pharos/bin .
 
 CMD ["./pharos-api-server"]
