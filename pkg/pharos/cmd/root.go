@@ -15,7 +15,7 @@ var (
 	file          string
 	inactive      bool
 	pharosConfig  string
-	pharosVersion = "0.0.0" // pharosVersion can be overwritten by ldflags in the Makefile.
+	pharosVersion string // pharosVersion can be overwritten by ldflags in the Makefile.
 )
 
 // rootCmd represents the base command when called without any subcommands.
@@ -40,6 +40,11 @@ func Execute() error {
 }
 
 func init() {
+	// Set default version number if none given.
+	if rootCmd.Version == "" {
+		rootCmd.Version = "0.0.0"
+	}
+
 	rootCmd.Flags().BoolP("version", "v", false, "print Pharos version number")
 	rootCmd.PersistentFlags().StringVarP(&pharosConfig, "config", "c", fmt.Sprintf("%s/.kube/pharos/config", os.Getenv("HOME")), "Pharos config file")
 
