@@ -10,14 +10,14 @@ import (
 )
 
 // completionCmd implements a CLI command that allows a user to register into
-// their shell of choice (bash or zsh) autocomplete functionality for the pharos
+// their shell of choice (bash or zsh) autocomplete functionality for the Pharos
 // command.
 //
-// The following cobra.Comand is heavily derived from the Kubernetes kubectl
+// The following cobra.Command is heavily derived from the Kubernetes kubectl
 // autocomplete functionality:
 // https://github.com/kubernetes/kubernetes/blob/c30f0248649c15a46ab99eb722de0448988198f8/pkg/kubectl/cmd/completion/completion.go
 var completionCmd = &cobra.Command{
-	Use:   "completion SHELL",
+	Use:   "completion <shell>",
 	Short: "Generates completion scripts for the specified shell (bash or zsh)",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		switch {
