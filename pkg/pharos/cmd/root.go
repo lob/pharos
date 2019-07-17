@@ -52,6 +52,7 @@ func init() {
 	rootCmd.SilenceUsage = true
 
 	// Add child commands.
+	rootCmd.AddCommand(completionCmd)
 	rootCmd.AddCommand(clustersCmd)
 	rootCmd.AddCommand(setupCmd)
 	clustersCmd.AddCommand(CreateCmd)
