@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
@@ -17,8 +18,8 @@ import (
 // autocomplete functionality:
 // https://github.com/kubernetes/kubernetes/blob/c30f0248649c15a46ab99eb722de0448988198f8/pkg/kubectl/cmd/completion/completion.go
 var completionCmd = &cobra.Command{
-	Use:   "completion <shell>",
-	Short: "Generates completion scripts for the specified shell (bash or zsh)",
+	Use:   "completion [shell]",
+	Short: "Generates completion scripts for the specified shell (bash or zsh), defaulting to bash",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		switch {
 		case len(args) == 0:
@@ -34,10 +35,22 @@ var completionCmd = &cobra.Command{
 }
 
 func runCompletionZsh(out io.Writer) error {
-	zshHead := "#compdef pharos\n"
-	out.Write([]byte(zshHead)) //nolint
+	var b bytes.Buffer
+	buf := bufio.NewWriter(&b)
 
-	zshInitialization := `
+	buf.WriteString(zshInitialization) //nolint
+	rootCmd.GenBashCompletion(buf)     //nolint
+	buf.WriteString(zshTail)           //nolint
+	buf.Flush()                        //nolint
+
+	out.Write(b.Bytes()) //nolint
+
+	return nil
+}
+
+var (
+	zshInitialization = `
+#compdef pharos
 __pharos_bash_source() {
 	alias shopt=':'
 	alias _expand=_bash_expand
@@ -162,19 +175,10 @@ __pharos_convert_bash_to_zsh() {
 	-e "s/\\\$(type${RWORD}/\$(__pharos_type/g" \
 	<<'BASH_COMPLETION_EOF'
 `
-	out.Write([]byte(zshInitialization)) //nolint
-
-	buf := new(bytes.Buffer)
-	rootCmd.GenBashCompletion(buf) //nolint
-	out.Write(buf.Bytes())         //nolint
-
-	zshTail := `
+	zshTail = `
 BASH_COMPLETION_EOF
 }
 __pharos_bash_source <(__pharos_convert_bash_to_zsh)
 _complete pharos 2>/dev/null
 `
-	out.Write([]byte(zshTail)) //nolint
-
-	return nil
-}
+)
