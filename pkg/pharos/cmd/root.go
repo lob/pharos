@@ -26,13 +26,6 @@ var rootCmd = &cobra.Command{
 	Version: pharosVersion,
 }
 
-// clustersCmd is the pharos clusters command.
-var clustersCmd = &cobra.Command{
-	Use:   "clusters",
-	Short: `Commands for cluster management (run "pharos clusters -h" for a full list of cluster commands)`,
-	Long:  "Commands for managing cluster kubeconfig files.",
-}
-
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() error {
@@ -53,16 +46,8 @@ func init() {
 
 	// Add child commands.
 	rootCmd.AddCommand(completionCmd)
-	rootCmd.AddCommand(clustersCmd)
+	rootCmd.AddCommand(NewClustersCmd())
 	rootCmd.AddCommand(setupCmd)
-	clustersCmd.AddCommand(CreateCmd)
-	clustersCmd.AddCommand(CurrentCmd)
-	clustersCmd.AddCommand(DeleteCmd)
-	clustersCmd.AddCommand(GetCmd)
-	clustersCmd.AddCommand(ListCmd)
-	clustersCmd.AddCommand(SwitchCmd)
-	clustersCmd.AddCommand(SyncCmd)
-	clustersCmd.AddCommand(UpdateCmd)
 }
 
 // argID prevents commands from being run unless exactly one argument (a cluster name or id)
