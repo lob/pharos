@@ -16,8 +16,8 @@ var (
 	pharosURL  string
 )
 
-// setupCmd is the pharos setup command.
-var setupCmd = &cobra.Command{
+// SetupCmd is the pharos setup command.
+var SetupCmd = &cobra.Command{
 	Use:   "setup",
 	Short: "Setup Pharos config",
 	Long:  "Setup Pharos configuration file. Overwrites previously saved configuration.",
@@ -58,7 +58,7 @@ func runSetup(pharosConfig, url, profile, arn string) error {
 }
 
 func init() {
-	setupCmd.Flags().StringVarP(&awsProfile, "aws-profile", "p", "", "specify aws profile to use")
-	setupCmd.Flags().StringVarP(&awsRoleARN, "aws-role-arn", "r", "", "specify aws role ARN to use")
-	setupCmd.Flags().StringVarP(&pharosURL, "pharos-url", "u", "", "specify URL of the Pharos server")
+	SetupCmd.Flags().StringVarP(&awsProfile, "aws-profile", "p", "", "specify aws profile to use")
+	SetupCmd.Flags().StringVarP(&awsRoleARN, "aws-role-arn", "r", "", "specify aws role ARN to use")
+	SetupCmd.Flags().StringVarP(&pharosURL, "pharos-url", "u", "", "specify URL of the Pharos server")
 }

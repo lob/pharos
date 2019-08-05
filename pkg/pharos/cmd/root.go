@@ -47,7 +47,7 @@ func init() {
 	// Add child commands.
 	rootCmd.AddCommand(completionCmd)
 	rootCmd.AddCommand(NewClustersCmd())
-	rootCmd.AddCommand(setupCmd)
+	rootCmd.AddCommand(SetupCmd)
 }
 
 // argID prevents commands from being run unless exactly one argument (a cluster name or id)
