@@ -50,7 +50,7 @@ func ClientFromConfig(configFile string) (*Client, error) {
 	}
 
 	// Create token generator.
-	var s *aws.Session
+	var s *session.Session
 	if c.AWSProfile == "" {
 		s, err = session.NewSession()
 	} else {
