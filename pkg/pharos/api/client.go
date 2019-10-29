@@ -50,7 +50,12 @@ func ClientFromConfig(configFile string) (*Client, error) {
 	}
 
 	// Create token generator.
-	s, err := session.NewSessionWithOptions(session.Options{Profile: c.AWSProfile})
+	var s *aws.Session
+	if c.AWSProfile == "" {
+		s, err = session.NewSession()
+	} else {
+		s, err = session.NewSessionWithOptions(session.Options{Profile: c.AWSProfile})
+	}
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create session for authorization token")
 	}
